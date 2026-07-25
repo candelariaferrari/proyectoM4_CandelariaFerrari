@@ -2,7 +2,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
-  signOut
+  signOut,
+  type User
 } from "firebase/auth";
 import { auth } from "../../services/firebase";
 import { getAuthErrorMessage } from "./authErrors";

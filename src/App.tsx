@@ -1,5 +1,11 @@
+import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./features/auth/Authenticator";
 import { login, register, logout } from "./features/auth/authActions";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import Tasks from "./pages/Tasks/Tasks";
+import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
   const { user, loading } = useAuth();
@@ -41,13 +47,26 @@ function App() {
 
   return (
     <div>
+      <Routes>
+          {/* rutas publicas */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="*" element={<NotFound />} />
+          {/* rutas privadas */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/tasks" element={<Tasks />} />
+        </Route>
+      </Routes>
+
+
       <h1>Test de Firebase Auth</h1>
       <p>
         {loading
           ? "Cargando..."
           : user
-          ? `Hay usuario logueado: ${user.email}`
-          : "No hay usuario logueado"}
+            ? `Hay usuario logueado: ${user.email}`
+            : "No hay usuario logueado"}
       </p>
       <button onClick={handleTestRegister}>Registrarme (prueba)</button>
       <button onClick={handleTestLogin}>Login (prueba)</button>
