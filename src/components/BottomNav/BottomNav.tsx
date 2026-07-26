@@ -1,0 +1,35 @@
+import { NavLink } from "react-router-dom";
+import { NAV_ITEMS } from "../../config/navItems";
+import "./BottomNav.css";
+
+interface BottomNavProps {
+  onLogout: () => void;
+}
+
+function BottomNav({ onLogout }: BottomNavProps) {
+  return (
+    <nav className="bottom-nav">
+      {NAV_ITEMS.map((item) => (
+        <NavLink
+          key={item.to}
+          to={item.to}
+          className={({ isActive }) =>
+            `bottom-nav__item${isActive ? " bottom-nav__item--active" : ""}`
+          }
+        >
+          {item.label}
+        </NavLink>
+      ))}
+
+      <button type="button" className="bottom-nav__add-btn" aria-label="Nueva tarea">
+        +
+      </button>
+
+      <button type="button" className="bottom-nav__logout" onClick={onLogout}>
+        Salir
+      </button>
+    </nav>
+  );
+}
+
+export default BottomNav;

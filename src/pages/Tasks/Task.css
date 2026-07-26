@@ -1,0 +1,52 @@
+.tasks-page {
+  display: flex;
+  min-height: 100vh;
+}
+
+.tasks-page__content {
+  flex: 1;
+  padding: 24px 20px;
+  padding-bottom: 76px;
+  overflow-y: auto;
+}
+
+.tasks-page__content h2 {
+  font-size: 21px;
+  margin: 0 0 14px;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filter {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 100px;
+  color: var(--plum-2);
+  background: #fff;
+  border: 1px solid var(--orange-deep);
+  cursor: pointer;
+}
+
+.filter.active {
+  background: var(--orange);
+  color: #fff;
+  border-color: var(--orange);
+}
+
+@media (min-width: 768px) {
+  .tasks-page__content {
+    padding: 26px 30px;
+    padding-bottom: 76px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tasks-page__content {
+    padding-bottom: 26px;
+  }
+}
