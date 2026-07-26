@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 import { useState } from "react";
-import { login } from "../../features/auth/authActions";
+import { login, loginWithGoogle } from "../../features/auth/authActions";
 import { validateLogin } from "../../utils/validateLogin";
 import type { LoginFormState } from "../../types/auth";
 
@@ -25,6 +25,10 @@ function LoginForm() {
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
+  function destinoTrasLogin() {
+    return state?.from?.pathname || "/tasks";
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -39,8 +43,20 @@ function LoginForm() {
 
     try {
       await login({ email: form.email, password: form.password });
-      const destino = state?.from?.pathname || "/";
-      navigate(destino, { replace: true });
+      navigate(destinoTrasLogin(), { replace: true });
+    } catch (error) {
+      setStatus("error");
+      setError((error as Error).message);
+    }
+  }
+
+  async function handleGoogleLogin() {
+    setError(null);
+    setStatus("loading");
+
+    try {
+      await loginWithGoogle();
+      navigate(destinoTrasLogin(), { replace: true });
     } catch (error) {
       setStatus("error");
       setError((error as Error).message);
@@ -52,9 +68,14 @@ function LoginForm() {
       <h2>Bienvenida de nuevo</h2>
       <p className="sub">Iniciá sesión para ver tus tareas.</p>
 
-      <div className="google-btn">
+      <button
+        type="button"
+        className="google-btn"
+        onClick={handleGoogleLogin}
+        disabled={status === "loading"}
+      >
         <span className="g-dot"></span> Continuar con Google
-      </div>
+      </button>
       <div className="divider">o iniciá sesión con tu email</div>
 
       <form onSubmit={handleSubmit} noValidate>

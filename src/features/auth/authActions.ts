@@ -1,6 +1,8 @@
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   updateProfile,
   signOut,
   type User
@@ -19,6 +21,8 @@ export interface RegisterCredentials {
   email: string;
   password: string;
 }
+
+const googleProvider = new GoogleAuthProvider();
 
 /* Login */
 export async function login({ email,password,}: LoginCredentials): Promise<User> {
@@ -53,6 +57,17 @@ export async function register({name,lastname,email,password,}: RegisterCredenti
     throw new Error(getAuthErrorMessage(error));
   }
 }
+
+/* Login / registro con Google — si la cuenta no existe, Firebase la crea sola */
+export async function loginWithGoogle(): Promise<User> {
+  try {
+    const userCredential = await signInWithPopup(auth, googleProvider);
+    return userCredential.user;
+  } catch (error) {
+    throw new Error(getAuthErrorMessage(error));
+  }
+}
+
 /* Logout */
 export async function logout(): Promise<void> {
   try {

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./RegisterForm.css";
 import { useState } from "react";
-import { register } from "../../features/auth/authActions";
+import { register, loginWithGoogle } from "../../features/auth/authActions";
 import { validateRegister } from "../../utils/validateRegister";
 import type { RegisterFormState } from "../../types/auth";
 
@@ -50,14 +50,32 @@ function RegisterForm() {
     }
   }
 
+  async function handleGoogleRegister() {
+    setError(null);
+    setStatus("loading");
+
+    try {
+      await loginWithGoogle();
+      navigate("/tasks", { replace: true });
+    } catch (error) {
+      setStatus("error");
+      setError((error as Error).message);
+    }
+  }
+
   return (
     <div className="register-form-panel">
       <h2>Creá tu cuenta</h2>
       <p className="sub">Empezá a organizar tus tareas hoy.</p>
 
-      <div className="google-btn">
+      <button
+        type="button"
+        className="google-btn"
+        onClick={handleGoogleRegister}
+        disabled={status === "loading"}
+      >
         <span className="g-dot"></span> Continuar con Google
-      </div>
+      </button>
       <div className="divider">o registrate con tu email</div>
 
       <form onSubmit={handleSubmit} noValidate>
