@@ -1,5 +1,5 @@
 import { validateTask } from "../../utils/validateTask";
-import type { TaskPriority } from "../../types/task";
+import type { TaskPriority, Task } from "../../types/task";
 import "./TaskForm.css"
 import { useState } from "react";
 
@@ -20,7 +20,8 @@ export interface TaskFormData {
 }
 
 interface TaskFormProps {
-    onAddTask: (formData: TaskFormData) => void;
+    initialTask?: Task;
+    onSubmit: (formData: TaskFormData) => void;
 }
 
 const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
@@ -29,13 +30,23 @@ const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
     { value: "low", label: "Baja" },
 ];
 
-function TaskForm({ onAddTask }: TaskFormProps) {
-    const [form, setForm] = useState<TaskFormState>({
-        title: "",
-        description: "",
-        priority: "",
-        dueDate: "",
-    });
+function toDateInputValue(date?: Date): string {
+    if (!date) return "";
+    return date.toISOString().slice(0, 10);
+}
+
+function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
+    //pasamos una función en vez de un valor directo , react la ejecuta una sola vez 
+    const [form, setForm] = useState<TaskFormState>(() =>
+        initialTask
+            ? {
+                  title: initialTask.title,
+                  description: initialTask.description ?? "",
+                  priority: initialTask.priority,
+                  dueDate: toDateInputValue(initialTask.dueDate),
+              }
+            : { title: "", description: "", priority: "", dueDate: "" }
+    );
     const [errors, setErrors] = useState<Partial<Record<keyof TaskFormState, string>>>({});
     const [status, setStatus] = useState<SubmitStatus>("idle");
 
@@ -50,20 +61,15 @@ function TaskForm({ onAddTask }: TaskFormProps) {
         }
 
         setErrors({});
-
         setStatus("loading");
-        await new Promise(res => setTimeout(res, 600));
+        await new Promise(res => setTimeout(res, 400));
 
-        onAddTask({
+        onSubmit({
             title: form.title.trim(),
             description: form.description.trim(),
             priority: form.priority as TaskPriority,
             dueDate: form.dueDate || undefined,
         });
-        setForm({ title: "", description: "", priority: "", dueDate: "" });
-
-        setStatus("success");
-        setTimeout(() => setStatus("idle"), 2000);
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -71,7 +77,6 @@ function TaskForm({ onAddTask }: TaskFormProps) {
         setForm((prev) => ({ ...prev, [name]: value }))
     }
 
-    //guarde el valor del estado de prioridad y agrega un --selected que se agrega dinámicamente comparando form.priority === option.value, igual a lo que ya hacías con --loading
     const handlePriorityClick = (value: TaskPriority) => {
         setForm((prev) => ({ ...prev, priority: value }))
     }
@@ -137,11 +142,10 @@ function TaskForm({ onAddTask }: TaskFormProps) {
                 className={`task-form__btn${status === "loading" ? " task-form__btn--loading" : ""}`}
                 type="submit"
                 disabled={status === "loading"}>
-                Agregar tarea
+                {initialTask ? "Guardar cambios" : "Agregar tarea"}
             </button>
-            {status === "success" && <p className="task-form__success">Tarea agregada.</p>}
-        </form >
+        </form>
     )
 }
 
-export default TaskForm
+export default TaskForm;

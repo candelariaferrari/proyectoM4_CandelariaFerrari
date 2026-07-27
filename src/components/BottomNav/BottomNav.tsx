@@ -4,9 +4,10 @@ import "./BottomNav.css";
 
 interface BottomNavProps {
   onLogout: () => void;
+  onNewTaskClick: () => void;
 }
 
-function BottomNav({ onLogout }: BottomNavProps) {
+function BottomNav({ onLogout, onNewTaskClick }: BottomNavProps) {
   return (
     <nav className="bottom-nav">
       {NAV_ITEMS.map((item) => (
@@ -21,7 +22,7 @@ function BottomNav({ onLogout }: BottomNavProps) {
         </NavLink>
       ))}
 
-      <button type="button" className="bottom-nav__add-btn" aria-label="Nueva tarea">
+      <button type="button" className="bottom-nav__add-btn" aria-label="Nueva tarea" onClick={onNewTaskClick}>
         +
       </button>
 
