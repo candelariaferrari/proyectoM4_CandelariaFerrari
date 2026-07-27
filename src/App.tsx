@@ -6,6 +6,7 @@ import AppLayout from "./components/AppLayout/AppLayout";
 import Tasks from "./pages/Tasks/Tasks";
 import NotFound from "./pages/NotFound/NotFound";
 
+
 function App() {
   return (
     <div>
@@ -18,7 +19,7 @@ function App() {
         {/* rutas privadas */}
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
-            <Route path="/tasks" element={<Tasks />} />
+           <Route path="/tasks" element={<Tasks />} />
           </Route>
         </Route>
 

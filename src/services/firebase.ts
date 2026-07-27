@@ -1,6 +1,7 @@
 /* configuracion referentea firaebase */
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
 
@@ -16,3 +17,4 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app); //conexion ya inicializada con firebase de mi proyecto
+export const db = getFirestore(app); //para poder leer/escribir tasks

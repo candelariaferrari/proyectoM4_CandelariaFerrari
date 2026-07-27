@@ -1,55 +1,21 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+import { auth, db } from "../../services/firebase";
 import type { Task } from "../../types/task";
+import useTasks from "../../hooks/useTasks";
 import TaskList from "../../components/TaskList/TaskList";
 import TaskForm, { type TaskFormData } from "../../components/TaskForm/TaskForm";
 import Modal from "../../components/Modals/Modals";
 import Alert from "../../components/Alert/Alert";
 import "./Task.css";
-
-const INITIAL_TASKS: Task[] = [
-  {
-    id: "1",
-    userId: "user-demo",
-    title: "Diseño UI Dashboard",
-    description: "Definir estructura de pantallas y paleta final.",
-    priority: "high",
-    completed: false,
-    dueDate: new Date("2026-07-26"),
-    createdAt: new Date("2026-07-20"),
-    updatedAt: new Date("2026-07-20"),
-  },
-  {
-    id: "2",
-    userId: "user-demo",
-    title: "Revisión de métricas semanales",
-    priority: "medium",
-    completed: false,
-    dueDate: new Date("2026-07-27"),
-    createdAt: new Date("2026-07-21"),
-    updatedAt: new Date("2026-07-21"),
-  },
-  {
-    id: "3",
-    userId: "user-demo",
-    title: "Actualizar foto de perfil",
-    priority: "low",
-    completed: false,
-    createdAt: new Date("2026-07-22"),
-    updatedAt: new Date("2026-07-22"),
-  },
-  {
-    id: "4",
-    userId: "user-demo",
-    title: "Enviar propuesta a cliente",
-    description: "Propuesta con presupuesto y cronograma.",
-    priority: "medium",
-    completed: true,
-    dueDate: new Date("2026-07-25"),
-    createdAt: new Date("2026-07-18"),
-    updatedAt: new Date("2026-07-25"),
-  },
-];
 
 type FilterValue = "all" | "pending" | "completed";
 
@@ -62,10 +28,11 @@ const FILTERS: { value: FilterValue; label: string }[] = [
 type LayoutContext = { newTaskRequestedAt: number };
 
 function Tasks() {
-  const { newTaskRequestedAt } = useOutletContext<LayoutContext>(); //leemos el valor de newTaskRequestedAt, a traves de oulet del applayout
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const { newTaskRequestedAt } = useOutletContext<LayoutContext>();
+  const { tasks, loading, error } = useTasks(auth.currentUser?.uid);
+
   const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
-  const [formModalTask, setFormModalTask] = useState<Task | "new" | null>(null); //unión discriminada, una sola variable que puede ser 3 cosas distintas
+  const [formModalTask, setFormModalTask] = useState<Task | "new" | null>(null);
   const [taskPendingDelete, setTaskPendingDelete] = useState<Task | null>(null);
   const [toast, setToast] = useState<{ message: string; variant: "success" | "error" } | null>(null);
 
@@ -80,12 +47,17 @@ function Tasks() {
     setFormModalTask("new");
   }, [newTaskRequestedAt]);
 
-  const handleToggle = (taskId: string) => {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const handleToggle = async (taskId: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+    try {
+      await updateDoc(doc(db, "tasks", taskId), {
+        completed: !task.completed,
+        updatedAt: serverTimestamp(),
+      });
+    } catch {
+      setToast({ message: "No se pudo actualizar la tarea. Intentá de nuevo.", variant: "error" });
+    }
   };
 
   const handleRequestDelete = (taskId: string) => {
@@ -93,52 +65,53 @@ function Tasks() {
     if (task) setTaskPendingDelete(task);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!taskPendingDelete) return;
     const deletedTitle = taskPendingDelete.title;
-    setTasks((prev) => prev.filter((task) => task.id !== taskPendingDelete.id));
-    setTaskPendingDelete(null);
-    setToast({ message: `Tarea eliminada exitosamente "${deletedTitle}"`, variant: "success" });
+    try {
+      await deleteDoc(doc(db, "tasks", taskPendingDelete.id));
+      setTaskPendingDelete(null);
+      setToast({ message: `Tarea eliminada "${deletedTitle}"`, variant: "success" });
+    } catch {
+      setToast({ message: "No se pudo eliminar la tarea. Intentá de nuevo.", variant: "error" });
+    }
   };
 
   const handleRequestEdit = (task: Task) => {
     setFormModalTask(task);
   };
 
-  const handleFormSubmit = (formData: TaskFormData) => {
-    if (formModalTask && formModalTask !== "new") {
-      const editingId = formModalTask.id;
-      setTasks((prev) =>
-        prev.map((task) =>
-          task.id === editingId
-            ? {
-              ...task,
-              title: formData.title,
-              description: formData.description || undefined,
-              priority: formData.priority,
-              dueDate: formData.dueDate ? new Date(formData.dueDate) : undefined,
-              updatedAt: new Date(),
-            }
-            : task
-        )
-      );
-       setToast({ message: `Tarea actualizada "${formData.title}"`, variant: "success" });
-    } else {
-      const newTask: Task = {
-        id: crypto.randomUUID(), //genera un ID único al crear una tarea nueva
-        userId: "user-demo",
-        title: formData.title,
-        description: formData.description || undefined,
-        priority: formData.priority,
-        completed: false,
-        dueDate: formData.dueDate ? new Date(formData.dueDate) : undefined,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      setTasks((prev) => [newTask, ...prev]);
-      setToast({ message: `Tarea creada "${formData.title}"`, variant: "success" });
+  const handleFormSubmit = async (formData: TaskFormData) => {
+    const uid = auth.currentUser?.uid;
+    if (!uid) return;
+
+    try {
+      if (formModalTask && formModalTask !== "new") {
+        await updateDoc(doc(db, "tasks", formModalTask.id), {
+          title: formData.title,
+          description: formData.description || null,
+          priority: formData.priority,
+          dueDate: formData.dueDate ? new Date(formData.dueDate) : null,
+          updatedAt: serverTimestamp(),
+        });
+        setToast({ message: `Tarea actualizada "${formData.title}"`, variant: "success" });
+      } else {
+        await addDoc(collection(db, "tasks"), {
+          title: formData.title,
+          priority: formData.priority,
+          completed: false,
+          userId: uid,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          ...(formData.description ? { description: formData.description } : {}),
+          ...(formData.dueDate ? { dueDate: new Date(formData.dueDate) } : {}),
+        });
+        setToast({ message: `Tarea creada "${formData.title}"`, variant: "success" });
+      }
+      setFormModalTask(null);
+    } catch {
+      setToast({ message: "No se pudo guardar la tarea. Intentá de nuevo.", variant: "error" });
     }
-    setFormModalTask(null);
   };
 
   const filteredTasks = tasks.filter((task) => {
@@ -164,12 +137,17 @@ function Tasks() {
         ))}
       </div>
 
-      <TaskList
-        tasks={filteredTasks}
-        onToggle={handleToggle}
-        onEdit={handleRequestEdit}
-        onDelete={handleRequestDelete}
-      />
+      {loading && <p>Cargando tareas...</p>}
+      {error && <p className="tasks-page__error">{error}</p>}
+
+      {!loading && !error && (
+        <TaskList
+          tasks={filteredTasks}
+          onToggle={handleToggle}
+          onEdit={handleRequestEdit}
+          onDelete={handleRequestDelete}
+        />
+      )}
 
       {formModalTask && (
         <Modal onClose={() => setFormModalTask(null)}>
@@ -196,6 +174,7 @@ function Tasks() {
           </div>
         </Modal>
       )}
+
       {toast && <Alert message={toast.message} variant={toast.variant} />}
     </div>
   );

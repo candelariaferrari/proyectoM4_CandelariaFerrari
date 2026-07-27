@@ -27,15 +27,6 @@ function TaskList({
 
   return (
     <section className="task-list-section">
-
-      <header className="task-list__header">
-        <h2>Mis tareas</h2>
-
-        <span className="task-list__count">
-          {tasks.length} {tasks.length === 1 ? "tarea" : "tareas"}
-        </span>
-      </header>
-
       <ul className="task-list">
         {tasks.map((task) => (
           <TaskItem
