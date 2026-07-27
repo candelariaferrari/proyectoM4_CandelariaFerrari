@@ -47,6 +47,7 @@
 .task-item__checkbox--low {
   border-color: var(--line);
 }
+
 .task-item__checkbox {
   position: relative;
 }
@@ -64,19 +65,22 @@
 }
 
 .task-item__checkbox--high:checked {
-  background: var(--fuchsia);
   border-color: var(--fuchsia);
 }
 
 .task-item__checkbox--medium:checked {
-  background: var(--orange);
   border-color: var(--orange);
 }
 
 .task-item__checkbox--low:checked {
-  background: var(--plum-2);
   border-color: var(--plum-2);
 }
+
+.task-item__checkbox:checked {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
 .task-item__content {
   flex: 1;
   min-width: 0;

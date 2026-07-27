@@ -47,8 +47,18 @@ const INITIAL_TASKS: Task[] = [
   },
 ];
 
+type FilterValue = "all" | "pending" | "completed";
+
+//array de configuración, para no escribir 3 veces el button
+const FILTERS: { value: FilterValue; label: string }[] = [
+  { value: "all", label: "Todas" },
+  { value: "pending", label: "Pendientes" },
+  { value: "completed", label: "Completadas" },
+];
+
 function Tasks() {
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const [activeFilter, setActiveFilter] = useState<FilterValue>("all"); //estado nuevo, arranca en Todas
 
   const handleToggle = (taskId: string) => {
     setTasks((prev) =>
@@ -63,22 +73,35 @@ function Tasks() {
   };
 
   const handleEdit = (task: Task) => {
-    // TODO: reemplazar por la apertura del modal de edición cuando lo armemos.
     console.log("Editar tarea:", task);
   };
+
+  //se recalcula en cada render , decide que tarea deja según el filtro activo 
+  const filteredTasks = tasks.filter((task) => {
+    if (activeFilter === "pending") return !task.completed;
+    if (activeFilter === "completed") return task.completed;
+    return true;
+  });
 
   return (
     <div className="tasks-page__content">
       <h2>Mis tareas</h2>
 
       <div className="filters">
-        <button type="button" className="filter active">Todas</button>
-        <button type="button" className="filter">Pendientes</button>
-        <button type="button" className="filter">Completadas</button>
+        {FILTERS.map((filter) => (
+          <button
+            key={filter.value}
+            type="button"
+            className={`filter${activeFilter === filter.value ? " active" : ""}`}
+            onClick={() => setActiveFilter(filter.value)}
+          >
+            {filter.label}
+          </button>
+        ))}
       </div>
-
+      {/* Pasamos la versión filtrada de cada lista*/}
       <TaskList
-        tasks={tasks}
+        tasks={filteredTasks}
         onToggle={handleToggle}
         onEdit={handleEdit}
         onDelete={handleDelete}
