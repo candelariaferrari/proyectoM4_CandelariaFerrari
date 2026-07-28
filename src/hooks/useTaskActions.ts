@@ -36,7 +36,7 @@ function useTaskActions() {
         ...(formData.description ? { description: formData.description } : {}),
         ...(formData.dueDate ? { dueDate: new Date(formData.dueDate) } : {}),
       });
-      showToast({ message: "Tarea creada", variant: "success" });
+      showToast({ message: `Tarea creada con éxito "${formData.title}"`, variant: "success" });
       return true;
     } catch {
       showToast({ message: "No se pudo crear la tarea. Intentá de nuevo.", variant: "error" });

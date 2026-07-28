@@ -1,0 +1,45 @@
+import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
+import Alert from "../components/Alert/Alert";
+
+interface ToastData {
+  message: string;
+  variant: "success" | "error";
+}
+
+interface ToastContextValue {
+  showToast: (toast: ToastData) => void;
+}
+
+const ToastContext = createContext<ToastContextValue>({ showToast: () => {} });
+
+// hook para que cualquier componente/hook pueda disparar un toast
+export function useToast() {
+  return useContext(ToastContext);
+}
+
+interface ToastProviderProps {
+  children: ReactNode;
+}
+
+const TOAST_DURATION_MS = 3000;
+
+// provider: guarda el toast activo y lo muestra con Alert, en un solo lugar.
+// Antes cada pantalla (AppLayout, Tasks) tenia su propio estado de toast por
+// separado (y AppLayout directamente no tenia ninguno); ahora se comparte.
+export function ToastProvider({ children }: ToastProviderProps) {
+  const [toast, setToast] = useState<ToastData | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = useCallback((data: ToastData) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setToast(data);
+    timerRef.current = setTimeout(() => setToast(null), TOAST_DURATION_MS);
+  }, []);
+
+  return (
+    <ToastContext.Provider value={{ showToast }}>
+      {children}
+      {toast && <Alert message={toast.message} variant={toast.variant} />}
+    </ToastContext.Provider>
+  );
+}
