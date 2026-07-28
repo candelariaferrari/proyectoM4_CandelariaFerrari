@@ -6,7 +6,6 @@ import Modal from "../Modals/Modals";
 import TaskForm, { type TaskFormData } from "../TaskForm/TaskForm";
 import { logout } from "../../features/auth/authActions";
 import useTaskActions from "../../hooks/useTaskActions";
-import ToastProvider from "../ToastProvider/ToastProvider";
 import "./AppLayout.css";
 
 function AppLayout() {
@@ -29,22 +28,20 @@ function AppLayout() {
   };
 
   return (
-    <ToastProvider>
-      <div className="app-layout">
-        <Sidebar onLogout={handleLogout} onNewTaskClick={handleNewTaskClick} />
-        <div className="app-layout__content">
-          <Outlet />
-        </div>
-        <BottomNav onLogout={handleLogout} onNewTaskClick={handleNewTaskClick} />
-
-        {isNewTaskOpen && (
-          <Modal onClose={() => setIsNewTaskOpen(false)}>
-            <h3>Nueva tarea</h3>
-            <TaskForm onSubmit={handleCreateTask} />
-          </Modal>
-        )}
+    <div className="app-layout">
+      <Sidebar onLogout={handleLogout} onNewTaskClick={handleNewTaskClick} />
+      <div className="app-layout__content">
+        <Outlet />
       </div>
-    </ToastProvider>
+      <BottomNav onLogout={handleLogout} onNewTaskClick={handleNewTaskClick} />
+
+      {isNewTaskOpen && (
+        <Modal onClose={() => setIsNewTaskOpen(false)}>
+          <h3>Nueva tarea</h3>
+          <TaskForm onSubmit={handleCreateTask} />
+        </Modal>
+      )}
+    </div>
   );
 }
 

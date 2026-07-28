@@ -7,6 +7,7 @@ import Tasks from "./pages/Tasks/Tasks";
 import NotFound from "./pages/NotFound/NotFound";
 import Summary from "./pages/Summary/Summary";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import ToastProvider from "./components/ToastProvider/ToastProvider";
 
 
 function App() {
@@ -20,7 +21,11 @@ function App() {
 
         {/* rutas privadas */}
         <Route element={<ProtectedRoute />}>
-          <Route element={<AppLayout />}>
+          {/* ToastProvider tiene que envolver a AppLayout desde AFUERA:
+              AppLayout usa el toast (via useTaskActions) para avisar cuando
+              se crea una tarea, y un componente no puede consumir un
+              contexto que el mismo esta proveyendo en su propio return. */}
+          <Route element={<ToastProvider><AppLayout /></ToastProvider>}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/summary" element={<Summary />} />
