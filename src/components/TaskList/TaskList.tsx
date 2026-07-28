@@ -7,6 +7,8 @@ interface TaskListProps {
   onToggle: (taskId: string) => void;
   onEdit: (task: Task) => void;
   onDelete: (taskId: string) => void;
+  // id de la tarea que tiene una escritura en curso (crear/editar/eliminar/togglear)
+  pendingTaskId?: string | null;
 }
 
 function TaskList({
@@ -14,6 +16,7 @@ function TaskList({
   onToggle,
   onEdit,
   onDelete,
+  pendingTaskId = null,
 }: TaskListProps) {
 
   if (tasks.length === 0) {
@@ -35,6 +38,7 @@ function TaskList({
             onToggle={() => onToggle(task.id)}
             onEdit={() => onEdit(task)}
             onDelete={() => onDelete(task.id)}
+            pending={pendingTaskId === task.id}
           />
         ))}
       </ul>

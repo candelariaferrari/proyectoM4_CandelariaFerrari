@@ -7,6 +7,8 @@ interface TaskItemProps {
   onToggle: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  // true mientras esta tarea puntual tiene una escritura en curso
+  pending?: boolean;
 }
 
 const PRIORITY_LABEL: Record<Task["priority"], string> = {
@@ -15,7 +17,7 @@ const PRIORITY_LABEL: Record<Task["priority"], string> = {
   low: "Baja",
 };
 
-function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
+function TaskItem({ task, onToggle, onEdit, onDelete, pending = false }: TaskItemProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -45,12 +47,17 @@ function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
   return (
     <li
       className={`task-item task-item--${task.priority}${task.completed ? " task-item--done" : ""}`}
+      // Feedback minimo de "esto esta guardando" mientras se resuelve la
+      // escritura en Firestore. El estilo final (spinner, animacion, etc.)
+      // queda para la pasada de CSS.
+      style={pending ? { opacity: 0.5, pointerEvents: "none" } : undefined}
     >
       <input
         className={`task-item__checkbox task-item__checkbox--${task.priority}`}
         type="checkbox"
         checked={task.completed}
         onChange={onToggle}
+        disabled={pending}
       />
 
       <div className="task-item__content">
@@ -81,6 +88,7 @@ function TaskItem({ task, onToggle, onEdit, onDelete }: TaskItemProps) {
           className="task-item__kebab"
           onClick={() => setIsMenuOpen((prev) => !prev)}
           aria-label="Más opciones"
+          disabled={pending}
         >
           ⋮
         </button>

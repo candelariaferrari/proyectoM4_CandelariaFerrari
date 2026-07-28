@@ -21,7 +21,10 @@ export interface TaskFormData {
 
 interface TaskFormProps {
     initialTask?: Task;
-    onSubmit: (formData: TaskFormData) => void;
+    // onSubmit puede devolver una promesa: el form espera a que termine
+    // (crear/editar de verdad en Firestore) para mostrar "Guardando..." y
+    // recién ahí volver a habilitarse.
+    onSubmit: (formData: TaskFormData) => void | Promise<void>;
 }
 
 const PRIORITY_OPTIONS: { value: TaskPriority; label: string }[] = [
@@ -62,14 +65,20 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
 
         setErrors({});
         setStatus("loading");
-        await new Promise(res => setTimeout(res, 400));
 
-        onSubmit({
-            title: form.title.trim(),
-            description: form.description.trim(),
-            priority: form.priority as TaskPriority,
-            dueDate: form.dueDate || undefined,
-        });
+        try {
+            await onSubmit({
+                title: form.title.trim(),
+                description: form.description.trim(),
+                priority: form.priority as TaskPriority,
+                dueDate: form.dueDate || undefined,
+            });
+        } finally {
+            // Si onSubmit tuvo éxito, el modal que envuelve este form se
+            // cierra y el componente se desmonta (esto no llega a pintarse).
+            // Si falló, esto reabilita el formulario para reintentar.
+            setStatus("idle");
+        }
     }
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -142,7 +151,9 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
                 className={`task-form__btn${status === "loading" ? " task-form__btn--loading" : ""}`}
                 type="submit"
                 disabled={status === "loading"}>
-                {initialTask ? "Guardar cambios" : "Agregar tarea"}
+                {status === "loading"
+                    ? "Guardando..."
+                    : initialTask ? "Guardar cambios" : "Agregar tarea"}
             </button>
         </form>
     )

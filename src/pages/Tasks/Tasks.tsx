@@ -1,17 +1,11 @@
-import { useEffect, useState } from "react";
-import {
-  deleteDoc,
-  doc,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
-import { auth, db } from "../../services/firebase";
+import { useState } from "react";
+import { auth } from "../../services/firebase";
 import type { Task } from "../../types/task";
 import useTasks from "../../hooks/useTasks";
+import useTaskActions from "../../hooks/useTaskActions";
 import TaskList from "../../components/TaskList/TaskList";
 import TaskForm, { type TaskFormData } from "../../components/TaskForm/TaskForm";
 import Modal from "../../components/Modals/Modals";
-import Alert from "../../components/Alert/Alert";
 import "./Task.css";
 
 type FilterValue = "all" | "pending" | "completed";
@@ -26,30 +20,16 @@ const FILTERS: { value: FilterValue; label: string }[] = [
 function Tasks() {
 
   const { tasks, loading, error } = useTasks(auth.currentUser?.uid);
+  const { updateTask, deleteTask, toggleTask, pendingId } = useTaskActions();
 
   const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
   const [formModalTask, setFormModalTask] = useState<Task | null>(null)
   const [taskPendingDelete, setTaskPendingDelete] = useState<Task | null>(null);
-  const [toast, setToast] = useState<{ message: string; variant: "success" | "error" } | null>(null);
-
-  useEffect(() => {
-    if (!toast) return;
-    const timer = setTimeout(() => setToast(null), 3000);
-    return () => clearTimeout(timer);
-  }, [toast]);
-
 
   const handleToggle = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
-    try {
-      await updateDoc(doc(db, "tasks", taskId), {
-        completed: !task.completed,
-        updatedAt: serverTimestamp(),
-      });
-    } catch {
-      setToast({ message: "No se pudo actualizar la tarea. Intentá de nuevo.", variant: "error" });
-    }
+    await toggleTask(task);
   };
 
   const handleRequestDelete = (taskId: string) => {
@@ -57,16 +37,12 @@ function Tasks() {
     if (task) setTaskPendingDelete(task);
   };
 
+  const isDeleting = taskPendingDelete ? pendingId === taskPendingDelete.id : false;
+
   const handleConfirmDelete = async () => {
     if (!taskPendingDelete) return;
-    const deletedTitle = taskPendingDelete.title;
-    try {
-      await deleteDoc(doc(db, "tasks", taskPendingDelete.id));
-      setTaskPendingDelete(null);
-      setToast({ message: `Tarea eliminada "${deletedTitle}"`, variant: "success" });
-    } catch {
-      setToast({ message: "No se pudo eliminar la tarea. Intentá de nuevo.", variant: "error" });
-    }
+    const ok = await deleteTask(taskPendingDelete);
+    if (ok) setTaskPendingDelete(null);
   };
 
   const handleRequestEdit = (task: Task) => {
@@ -75,19 +51,8 @@ function Tasks() {
 
   const handleFormSubmit = async (formData: TaskFormData) => {
     if (!formModalTask) return;
-    try {
-      await updateDoc(doc(db, "tasks", formModalTask.id), {
-        title: formData.title,
-        description: formData.description || null,
-        priority: formData.priority,
-        dueDate: formData.dueDate ? new Date(formData.dueDate) : null,
-        updatedAt: serverTimestamp(),
-      });
-      setToast({ message: `Tarea actualizada "${formData.title}"`, variant: "success" });
-      setFormModalTask(null);
-    } catch {
-      setToast({ message: "No se pudo guardar la tarea. Intentá de nuevo.", variant: "error" });
-    }
+    const ok = await updateTask(formModalTask.id, formData);
+    if (ok) setFormModalTask(null);
   };
 
   const filteredTasks = tasks.filter((task) => {
@@ -122,6 +87,7 @@ function Tasks() {
           onToggle={handleToggle}
           onEdit={handleRequestEdit}
           onDelete={handleRequestDelete}
+          pendingTaskId={pendingId}
         />
       )}
 
@@ -133,22 +99,30 @@ function Tasks() {
       )}
 
       {taskPendingDelete && (
-        <Modal onClose={() => setTaskPendingDelete(null)}>
+        <Modal onClose={() => { if (!isDeleting) setTaskPendingDelete(null); }}>
           <h3>¿Eliminar esta tarea?</h3>
           <p>Esta acción no se puede deshacer.</p>
           <div className="modal-box__task-preview">{taskPendingDelete.title}</div>
           <div className="modal-actions">
-            <button type="button" className="btn btn-outline" onClick={() => setTaskPendingDelete(null)}>
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={() => setTaskPendingDelete(null)}
+              disabled={isDeleting}
+            >
               Cancelar
             </button>
-            <button type="button" className="btn btn-danger" onClick={handleConfirmDelete}>
-              Eliminar
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Eliminando..." : "Eliminar"}
             </button>
           </div>
         </Modal>
       )}
-
-      {toast && <Alert message={toast.message} variant={toast.variant} />}
     </div>
   );
 }
