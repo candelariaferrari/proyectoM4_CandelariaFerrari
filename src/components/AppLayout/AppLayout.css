@@ -7,3 +7,4 @@
   flex: 1;
   min-width: 0;
 }
+.app-layout__error { color: var(--fuchsia); font-size: 12.5px; margin-top: 8px; }

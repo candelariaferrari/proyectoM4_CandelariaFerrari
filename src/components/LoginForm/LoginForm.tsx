@@ -26,7 +26,7 @@ function LoginForm() {
   }
 
   function destinoTrasLogin() {
-    return state?.from?.pathname || "/tasks";
+    return state?.from?.pathname || "/dashboard";
   }
 
   async function handleSubmit(event:React.SubmitEvent<HTMLFormElement>) {
@@ -65,7 +65,7 @@ function LoginForm() {
 
   return (
     <div className="login-form-panel">
-      <h2>Bienvenida de nuevo</h2>
+      <h2>Bienvenido</h2>
       <p className="sub">Iniciá sesión para ver tus tareas.</p>
 
       <button
