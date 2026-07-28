@@ -31,9 +31,7 @@ function useTasks(userId: string | undefined): UseTasksResult {
 
     const tasksRef = collection(db, "tasks");
     const q = query(tasksRef, where("userId", "==", userId));
-    /* onSnapshot no devuelve una Promise como getDocs — devuelve directamente una función para cancelar la suscripción,
-     que es justo lo que el return () => unsubscribe() del useEffect usa para "limpiar" cuando el componente se desmonta. 
-     Por eso acá no hay .then()/.catch() onSnapshot recibe dos funciones: la primera se ejecuta cada 
+    /* onSnapshot recibe dos funciones: la primera se ejecuta cada 
      vez que hay datos nuevos, la segunda solo si hay un error*/
     const unsubscribe = onSnapshot(
       q,
@@ -47,9 +45,10 @@ function useTasks(userId: string | undefined): UseTasksResult {
             description: data.description ?? undefined,
             priority: data.priority,
             completed: data.completed,
-            dueDate: data.dueDate ? data.dueDate.toDate() : undefined,  //La conversión de Timestamp a Date (data.dueDate.toDate(), etc.) pasa acá, en el único lugar donde se leen datos crudos de Firestore
-            createdAt: data.createdAt.toDate(),
-            updatedAt: data.updatedAt.toDate(),
+            dueDate: data.dueDate ? data.dueDate.toDate() : undefined,  // Timestamp a Date, lugar donde se leen datos crudos de Firestore
+            //serverTimestamp() (no confir por el servidor) -> Firestore devuelve null en el snapshot local , si no cubre ese caso toDate() explota y va new Date() como valor provisorio hastq ue snapshot con el timestamp real del servidor
+            createdAt: data.createdAt?.toDate() ?? new Date(),
+            updatedAt: data.updatedAt?.toDate() ?? new Date(),
           };
         });
         nextTasks.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
