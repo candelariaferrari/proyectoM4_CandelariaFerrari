@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
 import {
-  addDoc,
-  collection,
   deleteDoc,
   doc,
   serverTimestamp,
@@ -25,14 +22,13 @@ const FILTERS: { value: FilterValue; label: string }[] = [
   { value: "completed", label: "Completadas" },
 ];
 
-type LayoutContext = { newTaskRequestedAt: number };
 
 function Tasks() {
-  const { newTaskRequestedAt } = useOutletContext<LayoutContext>();
+
   const { tasks, loading, error } = useTasks(auth.currentUser?.uid);
 
   const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
-  const [formModalTask, setFormModalTask] = useState<Task | "new" | null>(null);
+  const [formModalTask, setFormModalTask] = useState<Task | null>(null)
   const [taskPendingDelete, setTaskPendingDelete] = useState<Task | null>(null);
   const [toast, setToast] = useState<{ message: string; variant: "success" | "error" } | null>(null);
 
@@ -42,10 +38,6 @@ function Tasks() {
     return () => clearTimeout(timer);
   }, [toast]);
 
-  useEffect(() => {
-    if (newTaskRequestedAt === 0) return;
-    setFormModalTask("new");
-  }, [newTaskRequestedAt]);
 
   const handleToggle = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
@@ -82,32 +74,16 @@ function Tasks() {
   };
 
   const handleFormSubmit = async (formData: TaskFormData) => {
-    const uid = auth.currentUser?.uid;
-    if (!uid) return;
-
+    if (!formModalTask) return;
     try {
-      if (formModalTask && formModalTask !== "new") {
-        await updateDoc(doc(db, "tasks", formModalTask.id), {
-          title: formData.title,
-          description: formData.description || null,
-          priority: formData.priority,
-          dueDate: formData.dueDate ? new Date(formData.dueDate) : null,
-          updatedAt: serverTimestamp(),
-        });
-        setToast({ message: `Tarea actualizada "${formData.title}"`, variant: "success" });
-      } else {
-        await addDoc(collection(db, "tasks"), {
-          title: formData.title,
-          priority: formData.priority,
-          completed: false,
-          userId: uid,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          ...(formData.description ? { description: formData.description } : {}),
-          ...(formData.dueDate ? { dueDate: new Date(formData.dueDate) } : {}),
-        });
-        setToast({ message: `Tarea creada "${formData.title}"`, variant: "success" });
-      }
+      await updateDoc(doc(db, "tasks", formModalTask.id), {
+        title: formData.title,
+        description: formData.description || null,
+        priority: formData.priority,
+        dueDate: formData.dueDate ? new Date(formData.dueDate) : null,
+        updatedAt: serverTimestamp(),
+      });
+      setToast({ message: `Tarea actualizada "${formData.title}"`, variant: "success" });
       setFormModalTask(null);
     } catch {
       setToast({ message: "No se pudo guardar la tarea. Intentá de nuevo.", variant: "error" });
@@ -151,11 +127,8 @@ function Tasks() {
 
       {formModalTask && (
         <Modal onClose={() => setFormModalTask(null)}>
-          <h3>{formModalTask === "new" ? "Nueva tarea" : "Editar tarea"}</h3>
-          <TaskForm
-            initialTask={formModalTask === "new" ? undefined : formModalTask}
-            onSubmit={handleFormSubmit}
-          />
+          <h3>Editar tarea</h3>
+          <TaskForm initialTask={formModalTask} onSubmit={handleFormSubmit} />
         </Modal>
       )}
 

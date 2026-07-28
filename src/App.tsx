@@ -6,6 +6,7 @@ import AppLayout from "./components/AppLayout/AppLayout";
 import Tasks from "./pages/Tasks/Tasks";
 import NotFound from "./pages/NotFound/NotFound";
 import Summary from "./pages/Summary/Summary";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 
 function App() {
@@ -20,8 +21,9 @@ function App() {
         {/* rutas privadas */}
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
-           <Route path="/tasks" element={<Tasks />} />
-           <Route path="/summary" element={<Summary />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/summary" element={<Summary />} />
           </Route>
         </Route>
 
