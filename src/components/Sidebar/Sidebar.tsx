@@ -4,7 +4,7 @@ import "./Sidebar.css";
 
 interface SidebarProps {
   onLogout: () => void;
-   onNewTaskClick: () => void;
+  onNewTaskClick: () => void;
 }
 
 function Sidebar({ onLogout, onNewTaskClick }: SidebarProps) {
@@ -13,8 +13,8 @@ function Sidebar({ onLogout, onNewTaskClick }: SidebarProps) {
       <div className="sidebar__logo">for today</div>
 
       <button type="button" className="sidebar__add-btn" onClick={onNewTaskClick}>
-    + Nueva Tarea
-  </button>
+        + Nueva Tarea
+      </button>
 
       <nav className="sidebar__nav">
         {NAV_ITEMS.map((item) => (

@@ -5,6 +5,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import AppLayout from "./components/AppLayout/AppLayout";
 import Tasks from "./pages/Tasks/Tasks";
 import NotFound from "./pages/NotFound/NotFound";
+import Summary from "./pages/Summary/Summary";
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
            <Route path="/tasks" element={<Tasks />} />
+           <Route path="/summary" element={<Summary />} />
           </Route>
         </Route>
 

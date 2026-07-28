@@ -1,0 +1,24 @@
+.email-btn {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.email-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.email-status {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+}
+
+.email-status--success { color: #1a7f37; }
+.email-status--error { color: var(--fuchsia); }
