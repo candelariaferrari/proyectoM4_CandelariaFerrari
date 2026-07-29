@@ -43,7 +43,7 @@ function RegisterForm() {
         email: form.email,
         password: form.password,
       });
-      navigate("/dashboard", { replace: true });
+      navigate("/summary", { replace: true });
     } catch (error) {
       setStatus("error");
       setError((error as Error).message);
@@ -56,7 +56,7 @@ function RegisterForm() {
 
     try {
       await loginWithGoogle();
-      navigate("/dashboard", { replace: true });
+      navigate("/summary", { replace: true });
     } catch (error) {
       setStatus("error");
       setError((error as Error).message);

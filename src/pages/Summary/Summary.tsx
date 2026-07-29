@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { auth } from "../../services/firebase";
 import useTasks from "../../hooks/useTasks";
 import EmailSummaryButton from "../../components/EmailSummaryButton/EmailSummaryButton";
@@ -12,13 +13,23 @@ const PRIORITY_META = {
   low: { label: "Baja", color: "#4A3550" },
 } as const;
 
+//Formatear fecha limite, si no tiene -> sin fecha. si es 00:00 ->fecha, si es hora especifica si muestra
+function formatDueDate(date?: Date) {
+  if (!date) return "Sin fecha";
+  const hasTime = date.getHours() !== 0 || date.getMinutes() !== 0;
+  const datePart = date.toLocaleDateString("es-AR", { day: "numeric", month: "short" });
+  if (!hasTime) return datePart;
+  const timePart = date.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" });
+  return `${datePart} · ${timePart}`;
+}
+
 function Summary() {
-  const { tasks, loading, error } = useTasks(auth.currentUser?.uid);
+  const { tasks, loading, error } = useTasks(auth.currentUser?.uid); //todas las tareas de User autenticado, hook estado de carga y errores
 
-  const { start, end } = useMemo(() => getCurrentWeekRange(), []);
-  const weekDays = useMemo(() => getWeekDays(start), [start]);
+  const { start, end } = useMemo(() => getCurrentWeekRange(), []); // rango de la semana actual, useMemo para no calcularlo en cada render
+  const weekDays = useMemo(() => getWeekDays(start), [start]); //solo se calcula si cambia el dia inicial
 
-  const stats = useMemo(() => {
+  const stats = useMemo(() => { //estadistica semanal 
     const createdThisWeek = tasks.filter((t) => t.createdAt >= start && t.createdAt <= end);
     const completedThisWeek = tasks.filter(
       (t) => t.completed && t.updatedAt >= start && t.updatedAt <= end
@@ -36,7 +47,8 @@ function Summary() {
     return { created: createdThisWeek.length, completed: completedThisWeek.length, pending: pending.length, productivity, byPriority, priorityTotal };
   }, [tasks, start, end]);
 
-  const dayBreakdown = useMemo(
+// Genera un resumen por cada día de la semana. Para cada día guarda: - tareas creadas - cuántas fueron completadas - total de tareas
+  const dayBreakdown = useMemo( 
     () =>
       weekDays.map((day) => {
         const dayTasks = tasks.filter((t) => isSameDay(t.createdAt, day));
@@ -45,6 +57,25 @@ function Summary() {
       }),
     [weekDays, tasks]
   );
+
+  //lista de tareas que aparecerán en próximas
+  const upcoming = useMemo(() => {
+    const pendingSorted = tasks
+      .filter((t) => !t.completed)
+      .sort((a, b) => {
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return a.dueDate.getTime() - b.dueDate.getTime();
+      })
+      .slice(0, 4);
+
+    const lastCompleted = tasks
+      .filter((t) => t.completed)
+      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
+
+    return lastCompleted ? [...pendingSorted, lastCompleted] : pendingSorted;
+  }, [tasks]);
 
   if (loading) return <p className="resumen-page__status">Cargando resumen...</p>;
   if (error) return <p className="resumen-page__status resumen-page__status--error">{error}</p>;
@@ -72,6 +103,38 @@ function Summary() {
         <div className="stat-tile">
           <p className="stat-tile__value">{stats.productivity}%</p>
           <p className="stat-tile__label">Productividad</p>
+        </div>
+      </div>
+
+      <div className="resumen-upcoming">
+        <div className="resumen-upcoming__header">
+          <h3>Próximas tareas</h3>
+          <Link to="/tasks" className="resumen-upcoming__link">
+            Ver todas →
+          </Link>
+        </div>
+
+        <div className="resumen-upcoming__list">
+          {upcoming.length === 0 && (
+            <p className="resumen-page__status">No tenés tareas todavía.</p>
+          )}
+          {upcoming.map((task) => (
+            <div
+              key={task.id}
+              className={`task-row task-row--${task.priority}${task.completed ? " task-row--done" : ""}`}
+            >
+              <span className={`task-row__circle${task.completed ? " task-row__circle--done" : ""}`} />
+              <div className="task-row__text">
+                <p className="task-row__title">{task.title}</p>
+                <p className="task-row__sub">
+                  {task.completed ? "Completada" : formatDueDate(task.dueDate)}
+                </p>
+              </div>
+              <span className={`task-row__tag task-row__tag--${task.priority}`}>
+                {PRIORITY_META[task.priority].label}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 

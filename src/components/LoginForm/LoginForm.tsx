@@ -26,7 +26,7 @@ function LoginForm() {
   }
 
   function destinoTrasLogin() {
-    return state?.from?.pathname || "/dashboard";
+    return state?.from?.pathname || "/summary";
   }
 
   async function handleSubmit(event:React.SubmitEvent<HTMLFormElement>) {
