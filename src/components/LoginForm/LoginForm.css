@@ -1,6 +1,28 @@
 .login-form-panel {
   width: 100%;
   max-width: 380px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 26px;
+  box-shadow: 0 20px 44px rgba(43, 27, 46, .14);
+  border: 1px solid rgba(43, 27, 46, .06);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp .45s ease both .1s;
+}
+
+.login-form-panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--orange), var(--fuchsia));
+}
+
+@media (max-width: 767px) {
+  .login-form-panel {
+    padding: 22px 18px;
+  }
 }
 
 .login-form-panel h2 {

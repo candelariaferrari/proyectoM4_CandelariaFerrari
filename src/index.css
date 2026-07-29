@@ -11,6 +11,11 @@
   --white: #fff;
   --input-bg: #FBF9F4;
   --border-soft: #D8D0BF;
+  --grad-orange: linear-gradient(135deg, var(--orange), var(--orange-deep));
+  --grad-plum: linear-gradient(180deg, var(--plum) 0%, var(--plum-2) 100%);
+  --shadow-soft: 0 1px 4px rgba(43, 27, 46, 0.06);
+  --shadow-lift: 0 14px 26px rgba(43, 27, 46, 0.14);
+  --shadow-orange: 0 6px 16px rgba(255, 107, 53, 0.35);
 }
 
 * {
@@ -19,14 +24,15 @@
 
 body {
   margin: 0;
-  background: #EFE4D6;
   font-family: 'Inter', sans-serif;
   color: var(--plum);
+  /* antes: degradé diagonal plano. Ahora: resplandor radial cálido, se siente
+     con profundidad sin llamar la atención sobre el contenido */
+  background: radial-gradient(1200px circle at 15% -10%, #fff8ee 0%, #f7efe0 45%, #f0e5d3 100%) fixed;
+  min-height: 100vh;
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
   font-family: 'Fraunces', serif;
   margin: 0;
 }
@@ -38,6 +44,50 @@ h3 {
   min-height: 100vh;
   font-size: 14px;
   color: var(--plum-2);
+  gap: 10px;
+}
+
+.loading-session::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  border-top-color: var(--orange);
+  animation: spin .7s linear infinite;
+}
+
+/* ---- Animaciones compartidas ---- */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .35; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 16px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, #EFE6D6 25%, #F7F1E6 37%, #EFE6D6 63%);
+  background-size: 400px 100%;
+  animation: shimmer 1.6s infinite linear;
 }
 
 /* ---- Primitivas de formulario ---- */
@@ -58,6 +108,13 @@ h3 {
   background: var(--white);
   margin-bottom: 18px;
   cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.google-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lift);
+  border-color: var(--border-soft);
 }
 
 .google-btn:disabled {
@@ -111,11 +168,13 @@ h3 {
   font-family: 'Inter', sans-serif;
   font-size: 13px;
   color: var(--plum);
+  transition: border-color .16s ease, box-shadow .16s ease;
 }
 
 .field .input:focus {
   outline: none;
   border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
 }
 
 .field .input:disabled {
@@ -133,18 +192,30 @@ h3 {
   padding: 12px;
   border: none;
   border-radius: 8px;
-  background: var(--orange);
-  color: var(--plum);
+  background: var(--grad-orange);
+  color: #fff;
   font-family: inherit;
   font-weight: 700;
   font-size: 14px;
   margin-top: 6px;
   cursor: pointer;
+  box-shadow: var(--shadow-orange);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(255, 107, 53, 0.45);
+}
+
+.submit-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .submit-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
 .footlink {
@@ -160,4 +231,9 @@ h3 {
 
 .footlink a {
   text-decoration: none;
+  color: var(--orange-deep);
+}
+
+.footlink a:hover {
+  color: var(--fuchsia);
 }
