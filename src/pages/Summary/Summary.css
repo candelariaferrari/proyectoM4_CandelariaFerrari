@@ -1,6 +1,9 @@
 .resumen-page {
   padding: 1rem 2.5rem;
+  padding-bottom: 96px;
 }
+
+
 
 .resumen-page__status {
   padding: 24px 20px;
@@ -16,15 +19,16 @@
 
 .resumen-header {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  flex-direction: column;
+
   margin-bottom: 1rem;
   animation: fadeInUp .4s ease both;
 }
 
 .resumen-header h2 {
   font-size: 21px;
-  margin: 0;
+  margin: 0px;
+  padding: 0px;
 }
 
 .resumen-header__range {
@@ -496,3 +500,4 @@
   background: var(--orange);
   animation: pulseDot 1s infinite;
 }
+
