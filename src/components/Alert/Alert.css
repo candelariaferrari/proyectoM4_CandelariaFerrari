@@ -1,3 +1,8 @@
+@keyframes alertIn {
+  from { opacity: 0; transform: translate(-50%, 16px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
 .alert {
   position: fixed;
   left: 50%;
@@ -6,7 +11,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--plum);
+  background: var(--grad-plum);
   color: #fff;
   padding: 14px 20px;
   border-radius: 10px;
@@ -14,6 +19,7 @@
   z-index: 60;
   min-width: 280px;
   max-width: 90vw;
+  animation: alertIn .32s cubic-bezier(.22,1,.36,1) both;
 }
 
 .alert__dot {
@@ -21,6 +27,7 @@
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
+  animation: pulseDot 1.1s infinite;
 }
 
 .alert--error .alert__dot {
@@ -44,4 +51,9 @@
   font-size: 13px;
   cursor: pointer;
   flex-shrink: 0;
+  transition: color .14s ease;
+}
+
+.alert__action:hover {
+  color: #FFB088;
 }
