@@ -47,8 +47,8 @@ function Summary() {
     return { created: createdThisWeek.length, completed: completedThisWeek.length, pending: pending.length, productivity, byPriority, priorityTotal };
   }, [tasks, start, end]);
 
-// Genera un resumen por cada día de la semana. Para cada día guarda: - tareas creadas - cuántas fueron completadas - total de tareas
-  const dayBreakdown = useMemo( 
+  // Genera un resumen por cada día de la semana. Para cada día guarda: - tareas creadas - cuántas fueron completadas - total de tareas
+  const dayBreakdown = useMemo(
     () =>
       weekDays.map((day) => {
         const dayTasks = tasks.filter((t) => isSameDay(t.createdAt, day));
@@ -58,9 +58,14 @@ function Summary() {
     [weekDays, tasks]
   );
 
-  //lista de tareas que aparecerán en próximas
+  // Lista de tareas que aparecerán en "Próximas tareas". Antes se agregaba
+  // también la última tarea completada al final de la lista, pero esa sección
+  // se llama justamente "Próximas" (pendientes) y mostrar ahí una tarea ya
+  // completada confunde: parece que la tarea sigue por hacer. Ahora solo
+  // mostramos pendientes, ordenadas por fecha límite más próxima primero
+  // (sin fecha al final).
   const upcoming = useMemo(() => {
-    const pendingSorted = tasks
+    return tasks
       .filter((t) => !t.completed)
       .sort((a, b) => {
         if (!a.dueDate && !b.dueDate) return 0;
@@ -68,16 +73,31 @@ function Summary() {
         if (!b.dueDate) return -1;
         return a.dueDate.getTime() - b.dueDate.getTime();
       })
-      .slice(0, 4);
-
-    const lastCompleted = tasks
-      .filter((t) => t.completed)
-      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())[0];
-
-    return lastCompleted ? [...pendingSorted, lastCompleted] : pendingSorted;
+      .slice(0, 5);
   }, [tasks]);
 
-  if (loading) return <p className="resumen-page__status">Cargando resumen...</p>;
+  if (loading) {
+    return (
+      <div className="resumen-page">
+        <div className="resumen-skeleton">
+          <div className="resumen-skeleton__stats">
+            <div className="skeleton resumen-skeleton__tile" />
+            <div className="skeleton resumen-skeleton__tile" />
+            <div className="skeleton resumen-skeleton__tile" />
+            <div className="skeleton resumen-skeleton__tile" />
+          </div>
+          <div className="resumen-skeleton__grid">
+            <div className="skeleton resumen-skeleton__card" />
+            <div className="skeleton resumen-skeleton__card" />
+          </div>
+          <div className="skeleton resumen-skeleton__row" />
+          <div className="skeleton resumen-skeleton__row" style={{ width: "92%" }} />
+          <div className="skeleton resumen-skeleton__row" style={{ width: "96%" }} />
+          <p className="resumen-skeleton__caption"><span />Cargando tu semana…</p>
+        </div>
+      </div>
+    );
+  }
   if (error) return <p className="resumen-page__status resumen-page__status--error">{error}</p>;
 
   return (
@@ -106,6 +126,57 @@ function Summary() {
         </div>
       </div>
 
+      <div className="resumen-grid">
+        <div className="resumen-card">
+          <h3>Resumen por día</h3>
+          <div className="day-breakdown">
+            {dayBreakdown.map(({ day, tasks: dayTasks, completed, total }, i) => (
+              <div className="day-row" key={day.toISOString()}>
+                <span className="day-row__label">{WEEKDAY_LABELS[i]}</span>
+                <div className="day-row__dots">
+                  {dayTasks.length === 0 ? (
+                    <span className="day-row__empty">—</span>
+                  ) : (
+                    dayTasks.map((t) => (
+                      <span key={t.id} className={`day-dot ${t.completed ? "day-dot--done" : "day-dot--pending"}`} />
+                    ))
+                  )}
+                </div>
+                <span className="day-row__count">{completed}/{total}</span>
+              </div>
+            ))}
+          </div>
+          <p className="day-breakdown__note">Cada punto equivale a una tarea creada ese día.</p>
+        </div>
+
+        <div className="resumen-card">
+          <h3>Distribución por prioridad</h3>
+          <p className="resumen-card__subtitle">De todas tus tareas completadas</p>
+          <div className="priority-donut">
+            <Donut
+              segments={[
+                { value: stats.byPriority.high, color: PRIORITY_META.high.color },
+                { value: stats.byPriority.medium, color: PRIORITY_META.medium.color },
+                { value: stats.byPriority.low, color: PRIORITY_META.low.color },
+              ]}
+              size={110}
+              holeSize={78}
+            />
+            <div className="priority-legend">
+              {(["high", "medium", "low"] as const).map((p) => (
+                <div className="priority-legend__row" key={p}>
+                  <span className="priority-legend__dot" style={{ background: PRIORITY_META[p].color }} />
+                  <span className="priority-legend__label">{PRIORITY_META[p].label}</span>
+                  <span className="priority-legend__value">{stats.byPriority[p]} tareas</span>
+                  <span className="priority-legend__pct">
+                    {stats.priorityTotal === 0 ? "0%" : `${Math.round((stats.byPriority[p] / stats.priorityTotal) * 100)}%`}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="resumen-upcoming">
         <div className="resumen-upcoming__header">
           <h3>Próximas tareas</h3>
@@ -137,58 +208,6 @@ function Summary() {
           ))}
         </div>
       </div>
-
-      <div className="resumen-grid">
-        <div className="resumen-card">
-          <h3>Resumen por día</h3>
-          <div className="day-breakdown">
-            {dayBreakdown.map(({ day, tasks: dayTasks, completed, total }, i) => (
-              <div className="day-row" key={day.toISOString()}>
-                <span className="day-row__label">{WEEKDAY_LABELS[i]}</span>
-                <div className="day-row__dots">
-                  {dayTasks.length === 0 ? (
-                    <span className="day-row__empty">—</span>
-                  ) : (
-                    dayTasks.map((t) => (
-                      <span key={t.id} className={`day-dot ${t.completed ? "day-dot--done" : "day-dot--pending"}`} />
-                    ))
-                  )}
-                </div>
-                <span className="day-row__count">{completed}/{total}</span>
-              </div>
-            ))}
-          </div>
-          <p className="day-breakdown__note">Cada punto equivale a una tarea creada ese día.</p>
-        </div>
-
-        <div className="resumen-card">
-          <h3>Distribución por prioridad</h3>
-          <div className="priority-donut">
-            <Donut
-              segments={[
-                { value: stats.byPriority.high, color: PRIORITY_META.high.color },
-                { value: stats.byPriority.medium, color: PRIORITY_META.medium.color },
-                { value: stats.byPriority.low, color: PRIORITY_META.low.color },
-              ]}
-              size={110}
-              holeSize={78}
-            />
-            <div className="priority-legend">
-              {(["high", "medium", "low"] as const).map((p) => (
-                <div className="priority-legend__row" key={p}>
-                  <span className="priority-legend__dot" style={{ background: PRIORITY_META[p].color }} />
-                  <span className="priority-legend__label">{PRIORITY_META[p].label}</span>
-                  <span className="priority-legend__value">{stats.byPriority[p]} tareas</span>
-                  <span className="priority-legend__pct">
-                    {stats.priorityTotal === 0 ? "0%" : `${Math.round((stats.byPriority[p] / stats.priorityTotal) * 100)}%`}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="resumen-cta">
         <div className="resumen-cta__text">
           <div className="resumen-cta__icon">✉️</div>

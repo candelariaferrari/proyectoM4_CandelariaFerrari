@@ -6,11 +6,11 @@
   .sidebar {
     display: flex;
     flex-direction: column;
-    width: 200px;
+    width: 20%;
     flex-shrink: 0;
     min-height: 100vh;
     background: var(--grad-plum);
-    padding: 20px 14px;
+    padding: 2rem 1.5rem;
   }
 }
 
