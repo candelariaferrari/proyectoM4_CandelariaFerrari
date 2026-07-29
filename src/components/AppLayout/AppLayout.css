@@ -8,3 +8,21 @@
   min-width: 0;
 }
 .app-layout__error { color: var(--fuchsia); font-size: 12.5px; margin-top: 8px; }
+
+/* A partir de acá el sidebar (ver Sidebar.css) pasa a ocupar el viewport
+   completo y deja de crecer con el contenido: fijamos la altura de
+   app-layout a 100vh y hacemos que solo app-layout__content pueda
+   scrollear. Antes, al no tener altura fija, app-layout crecía con el
+   contenido más largo y el sidebar (que se estira por el flex) crecía con
+   él en vez de quedar fijo en pantalla. */
+@media (min-width: 1024px) {
+  .app-layout {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app-layout__content {
+    height: 100vh;
+    overflow-y: hidden;
+  }
+}
