@@ -1,3 +1,13 @@
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -7,6 +17,7 @@
   justify-content: center;
   z-index: 50;
   padding: 16px;
+  animation: overlayIn .18s ease both;
 }
 
 .modal-box {
@@ -16,6 +27,7 @@
   width: 100%;
   max-width: 360px;
   box-shadow: 0 20px 50px rgba(43, 27, 46, 0.3);
+  animation: modalIn .22s cubic-bezier(.22,1,.36,1) both;
 }
 
 .modal-box h3 {
@@ -56,6 +68,7 @@
   border: none;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
+  transition: transform .14s ease, box-shadow .14s ease, background .14s ease;
 }
 
 .btn-outline {
@@ -64,7 +77,18 @@
   color: var(--plum);
 }
 
-.btn-danger {
-  background: var(--fuchsia);
+.btn-outline:hover {
+  background: var(--plum);
   color: #fff;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--fuchsia), #b3245a);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(214, 51, 108, .35);
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(214, 51, 108, .45);
 }

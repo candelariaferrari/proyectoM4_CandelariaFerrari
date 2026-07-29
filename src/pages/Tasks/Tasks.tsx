@@ -78,7 +78,15 @@ function Tasks() {
         ))}
       </div>
 
-      {loading && <p>Cargando tareas...</p>}
+      {loading && (
+        <div className="tasks-skeleton">
+          <div className="skeleton tasks-skeleton__row" />
+          <div className="skeleton tasks-skeleton__row" style={{ width: "94%" }} />
+          <div className="skeleton tasks-skeleton__row" style={{ width: "97%" }} />
+          <div className="skeleton tasks-skeleton__row" style={{ width: "90%" }} />
+          <p className="tasks-skeleton__caption"><span />Cargando tus tareas…</p>
+        </div>
+      )}
       {error && <p className="tasks-page__error">{error}</p>}
 
       {!loading && !error && (

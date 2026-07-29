@@ -6,6 +6,13 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 16px;
+  transition: transform .16s ease, box-shadow .16s ease;
+  animation: fadeInUp .35s ease both;
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
 }
 
 .task-item--high {
@@ -34,6 +41,12 @@
   flex-shrink: 0;
   cursor: pointer;
   margin: 0;
+  position: relative;
+  transition: transform .12s ease;
+}
+
+.task-item__checkbox:hover {
+  transform: scale(1.08);
 }
 
 .task-item__checkbox--high {
@@ -46,10 +59,6 @@
 
 .task-item__checkbox--low {
   border-color: var(--line);
-}
-
-.task-item__checkbox {
-  position: relative;
 }
 
 .task-item__checkbox:checked::after {
@@ -66,19 +75,21 @@
 
 .task-item__checkbox--high:checked {
   border-color: var(--fuchsia);
+  background: linear-gradient(135deg, var(--fuchsia), #b3245a);
 }
 
 .task-item__checkbox--medium:checked {
   border-color: var(--orange);
+  background: var(--grad-orange);
 }
 
 .task-item__checkbox--low:checked {
   border-color: var(--plum-2);
+  background: linear-gradient(135deg, var(--plum-2), var(--plum));
 }
 
 .task-item__checkbox:checked {
-  background: var(--orange);
-  border-color: var(--orange);
+  box-shadow: 0 4px 10px rgba(0,0,0,.15);
 }
 
 .task-item__content {
@@ -150,10 +161,12 @@
   color: var(--plum-2);
   cursor: pointer;
   border-radius: 7px;
+  transition: background .14s ease, color .14s ease;
 }
 
 .task-item__kebab:hover {
   background: #F3ECDD;
+  color: var(--plum);
 }
 
 .task-item__dropdown {
@@ -169,6 +182,8 @@
   min-width: 130px;
   overflow: hidden;
   z-index: 5;
+  animation: fadeInUp .16s ease both;
+  transform-origin: top right;
 }
 
 .task-item__dropdown button {
@@ -180,6 +195,7 @@
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   color: var(--plum);
+  transition: background .12s ease;
 }
 
 .task-item__dropdown button:hover {
