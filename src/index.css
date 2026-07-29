@@ -238,3 +238,17 @@ h1, h2, h3 {
 .footlink a:hover {
   color: var(--fuchsia);
 }
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--orange);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
