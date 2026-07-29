@@ -1,80 +1,67 @@
 import { useState } from "react"
 import type { Task } from "../../types/task"
+import { useToast } from "../../hooks/useToast"
 import "./EmailSummaryButton.css"
 
 interface Props {
-    todos: Task[]
-    userEmail: string
+  todos: Task[]
+  userEmail: string
 }
 
-type Status = "idle" | "loading" | "success" | "error"
+type Status = "idle" | "loading"
 
 function buildTodoSummary(todos: Task[]): string {
-    const pending = todos.filter((t) => !t.completed)
-    const done = todos.filter((t) => t.completed)
+  const pending = todos.filter((t) => !t.completed)
+  const done = todos.filter((t) => t.completed)
 
-    return (
-        `Tareas pendientes (${pending.length}):\n` +
-        pending.map((t) => `- ${t.title}`).join("\n") +
-        `\n\nTareas completadas (${done.length}):\n` +
-        done.map((t) => `- ${t.title}`).join("\n")
-    )
+  return (
+    `Tareas pendientes (${pending.length}):\n` +
+    pending.map((t) => `- ${t.title}`).join("\n") +
+    `\n\nTareas completadas (${done.length}):\n` +
+    done.map((t) => `- ${t.title}`).join("\n")
+  )
 }
 
 function EmailSummaryButton({ todos, userEmail }: Props) {
-    const [status, setStatus] = useState<Status>("idle")
-    const [errorMsg, setErrorMsg] = useState("")
+  const [status, setStatus] = useState<Status>("idle")
+  const { showToast } = useToast()
 
-    async function handleSend() {
-        setStatus("loading")
-        setErrorMsg("")
+  async function handleSend() {
+    setStatus("loading")
 
-        const summary = buildTodoSummary(todos)
+    const summary = buildTodoSummary(todos)
 
-        try {
-            const res = await fetch("/api/send-email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ to: userEmail, summary }),
-            })
+    try {
+      const res = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ to: userEmail, summary }),
+      })
 
-            const data = await res.json()
+      const data = await res.json()
 
-            if (!res.ok) {
-                setStatus("error")
-                setErrorMsg(data?.message || "Error al enviar el email")
-                return
-            }
+      if (!res.ok) {
+        showToast({ message: data?.message || "Error al enviar el email", variant: "error" })
+        return
+      }
 
-            setStatus("success")
-        } catch (error) {
-            setStatus("error")
-            setErrorMsg("No se pudo conectar con el servidor")
-        }
+      showToast({ message: "Email enviado con éxito", variant: "success" })
+    } catch {
+      showToast({ message: "No se pudo conectar con el servidor", variant: "error" })
+    } finally {
+      setStatus("idle")
     }
+  }
 
-    return (
-        <div>
-            <button
-                className="email-btn"
-                onClick={handleSend}
-                disabled={status === "loading"}
-            >
-                {status === "loading" ? "Enviando..." : "Enviar resumen por email"}
-            </button>
-
-            {status === "success" && (
-                <p className="email-status email-status--success">
-                    ✓ Email enviado correctamente
-                </p>
-            )}
-            {status === "error" && (
-                <p className="email-status email-status--error">
-                    ✗ {errorMsg}
-                </p>
-            )}
-        </div>
-    )
+  return (
+    <button
+      className="email-btn"
+      onClick={handleSend}
+      disabled={status === "loading"}
+    >
+      {status === "loading" ? "Enviando..." : "Enviar resumen por email"}
+    </button>
+  )
 }
 
 export default EmailSummaryButton
