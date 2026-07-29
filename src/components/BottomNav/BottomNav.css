@@ -8,15 +8,11 @@
   justify-content: space-between;
   background: var(--grad-plum);
   border-radius: 16px 16px 0 0;
-  padding: 14px 20px;
+  padding: 20px 14px;
+  gap: 4px;
   z-index: 10;
   box-shadow: 0 -8px 24px rgba(43,27,46,.2);
-}
-
-.bottom-nav__links {
-  display: flex;
-  align-items: center;
-  gap: 18px;
+  overflow-x: auto;
 }
 
 @media (min-width: 1024px) {
@@ -26,15 +22,22 @@
 }
 
 .bottom-nav__item {
+  appearance: none;
+  border: none;
+  background: none;
+  font-family: 'Inter', sans-serif;
   font-size: 11.5px;
   color: #CBB9CE;
   text-decoration: none;
-  padding: 6px 10px;
-  border-radius: 7px;
-  transition: color .16s ease;
+  white-space: nowrap;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease;
 }
 
 .bottom-nav__item:hover {
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
 
@@ -43,51 +46,20 @@
   font-weight: 600;
 }
 
-.bottom-nav__center {
-  position: relative;
-  /* mismo ancho que el botón, para que quede reservado su lugar en el
-     centro del nav sin superponerse a los links ni a "Salir" */
-  width: 52px;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-}
-
-.bottom-nav__add-btn {
-  position: absolute;
-  left: 50%;
-  top: -22px;
-  transform: translateX(-50%);
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: none;
+.bottom-nav__item--new {
   background: var(--grad-orange);
   color: #fff;
-  font-size: 26px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  font-weight: 700;
   box-shadow: var(--shadow-orange);
-  transition: transform .16s ease, box-shadow .16s ease;
 }
 
-.bottom-nav__add-btn:hover {
-  transform: translateX(-50%) translateY(-2px) scale(1.05);
+.bottom-nav__item--new:hover {
+  background: var(--grad-orange);
+  color: #fff;
+  transform: translateY(-1px);
   box-shadow: 0 10px 22px rgba(255, 107, 53, 0.45);
 }
 
-.bottom-nav__logout {
-  background: none;
-  border: none;
-  font-size: 11.5px;
+.bottom-nav__item--logout {
   color: #CBB9CE;
-  cursor: pointer;
-  transition: color .16s ease;
-}
-
-.bottom-nav__logout:hover {
-  color: #fff;
 }
