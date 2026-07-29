@@ -10,6 +10,8 @@ export interface TaskFormState {
     description: string;
     priority: TaskPriority | ""; //vacio hasta el usuario elige 
     dueDate: string;
+    // Solo se edita cuando existe initialTask (no aplica al crear una tarea nueva).
+    completed?: boolean;
 }
 //para onAddTask
 export interface TaskFormData {
@@ -17,6 +19,7 @@ export interface TaskFormData {
     description: string;
     priority: TaskPriority; //ya paso validación por eso es TaskPriority
     dueDate?: string;
+    completed: boolean;
 }
 
 interface TaskFormProps {
@@ -47,8 +50,9 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
                   description: initialTask.description ?? "",
                   priority: initialTask.priority,
                   dueDate: toDateInputValue(initialTask.dueDate),
+                  completed: initialTask.completed,
               }
-            : { title: "", description: "", priority: "", dueDate: "" }
+            : { title: "", description: "", priority: "", dueDate: "", completed: false }
     );
     const [errors, setErrors] = useState<Partial<Record<keyof TaskFormState, string>>>({});
     const [status, setStatus] = useState<SubmitStatus>("idle");
@@ -72,6 +76,7 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
                 description: form.description.trim(),
                 priority: form.priority as TaskPriority,
                 dueDate: form.dueDate || undefined,
+                completed: form.completed ?? false,
             });
         } finally {
             // Si onSubmit tuvo éxito, el modal que envuelve este form se
@@ -146,6 +151,22 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
                 />
                 {errors.dueDate && <p className="task-form__error">{errors.dueDate}</p>}
             </div>
+
+            {initialTask && (
+                <div className="task-form__field task-form__field--checkbox">
+                    <label className="task-form__checkbox-label">
+                        <input
+                            type="checkbox"
+                            checked={form.completed ?? false}
+                            onChange={(event) =>
+                                setForm((prev) => ({ ...prev, completed: event.target.checked }))
+                            }
+                            disabled={status === "loading"}
+                        />
+                        Marcar como completada
+                    </label>
+                </div>
+            )}
 
             <button
                 className={`task-form__btn${status === "loading" ? " task-form__btn--loading" : ""}`}

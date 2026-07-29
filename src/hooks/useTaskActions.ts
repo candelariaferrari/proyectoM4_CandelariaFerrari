@@ -54,6 +54,7 @@ function useTaskActions() {
         description: formData.description || null,
         priority: formData.priority,
         dueDate: formData.dueDate ? new Date(formData.dueDate) : null,
+        completed: formData.completed,
         updatedAt: serverTimestamp(),
       });
       showToast({ message: `Tarea actualizada "${formData.title}"`, variant: "success" });
