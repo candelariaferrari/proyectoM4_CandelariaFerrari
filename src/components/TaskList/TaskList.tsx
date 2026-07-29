@@ -9,6 +9,8 @@ interface TaskListProps {
   onDelete: (taskId: string) => void;
   // id de la tarea que tiene una escritura en curso (crear/editar/eliminar/togglear)
   pendingTaskId?: string | null;
+  // abre el modal de nueva tarea desde el estado vacío
+  onNewTask?: () => void;
 }
 
 function TaskList({
@@ -17,13 +19,19 @@ function TaskList({
   onEdit,
   onDelete,
   pendingTaskId = null,
+  onNewTask,
 }: TaskListProps) {
 
   if (tasks.length === 0) {
     return (
       <div className="task-empty">
-        <h3>No tenés tareas todavía</h3>
-        <p>Creá tu primera tarea para empezar a organizar tu día.</p>
+        <h3>Todo despejado por hoy</h3>
+        <p>No tenés tareas pendientes. Sumá una nueva para arrancar tu día.</p>
+        {onNewTask && (
+          <button type="button" className="task-empty__btn" onClick={onNewTask}>
+            + Nueva tarea
+          </button>
+        )}
       </div>
     );
   }
