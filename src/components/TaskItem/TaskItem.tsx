@@ -46,7 +46,7 @@ function TaskItem({ task, onToggle, onEdit, onDelete, pending = false }: TaskIte
 
   return (
     <li
-      className={`task-item task-item--${task.priority}${task.completed ? " task-item--done" : ""}`}
+      className={`task-item task-item--${task.priority}${task.completed ? " task-item--done" : ""}${isMenuOpen ? " task-item--menu-open" : ""}`}
       // Feedback minimo de "esto esta guardando" mientras se resuelve la
       // escritura en Firestore. El estilo final (spinner, animacion, etc.)
       // queda para la pasada de CSS.

@@ -8,6 +8,18 @@
   padding: 16px;
   transition: transform .16s ease, box-shadow .16s ease;
   animation: fadeInUp .35s ease both;
+  /* position + z-index explícitos (aunque sea 0) para que cada task-item
+     forme su propio contexto de apilado. Sin esto, el menú de "Editar /
+     Eliminar" (que tiene z-index adentro) terminaba pintado por debajo de
+     la tarjeta siguiente, porque a igualdad de z-index los elementos más
+     nuevos en el DOM se dibujan encima de los anteriores. */
+  position: relative;
+  z-index: 0;
+}
+
+/* La tarjeta que tiene el menú abierto pasa por encima de sus vecinas. */
+.task-item--menu-open {
+  z-index: 2;
 }
 
 .task-item:hover {
