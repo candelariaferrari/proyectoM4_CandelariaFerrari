@@ -157,6 +157,7 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
                     <label className="task-form__checkbox-label">
                         <input
                             type="checkbox"
+                            className={`task-item__checkbox task-item__checkbox--${form.priority}`}
                             checked={form.completed ?? false}
                             onChange={(event) =>
                                 setForm((prev) => ({ ...prev, completed: event.target.checked }))

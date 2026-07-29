@@ -47,9 +47,6 @@ function TaskItem({ task, onToggle, onEdit, onDelete, pending = false }: TaskIte
   return (
     <li
       className={`task-item task-item--${task.priority}${task.completed ? " task-item--done" : ""}${isMenuOpen ? " task-item--menu-open" : ""}`}
-      // Feedback minimo de "esto esta guardando" mientras se resuelve la
-      // escritura en Firestore. El estilo final (spinner, animacion, etc.)
-      // queda para la pasada de CSS.
       style={pending ? { opacity: 0.5, pointerEvents: "none" } : undefined}
     >
       <input
@@ -61,22 +58,27 @@ function TaskItem({ task, onToggle, onEdit, onDelete, pending = false }: TaskIte
       />
 
       <div className="task-item__content">
-        <span className="task-item__title">{task.title}</span>
-
-        {task.description && (
-          <p className="task-item__description">{task.description}</p>
-        )}
-
-        <div className="task-item__meta">
-          {task.completed ? (
-            <span className="task-item__completed-label">✓ Completada</span>
-          ) : (
-            <span className="task-item__date">
-              {task.dueDate ? task.dueDate.toLocaleDateString("es-AR") : "Sin fecha"}
-            </span>
+        <span>
+          <span className="task-item__title">{task.title}</span>
+          {task.description && (
+            <p className="task-item__description">{task.description}</p>
           )}
-        </div>
+        </span>
+
+
+
       </div>
+
+      <div className="task-item__meta">
+        {task.completed ? (
+          <span className="task-item__completed-label">✓ Completada</span>
+        ) : (
+          <strong className="task-item__date">
+            Fecha limite: {task.dueDate ? task.dueDate.toLocaleDateString("es-AR") : "Sin fecha"}
+          </strong>
+        )}
+      </div>
+
 
       <span className={`task-item__priority task-item__priority--${task.priority}`}>
         {PRIORITY_LABEL[task.priority]}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { auth } from "../../services/firebase";
 import type { Task } from "../../types/task";
 import useTasks from "../../hooks/useTasks";
@@ -6,6 +6,7 @@ import useTaskActions from "../../hooks/useTaskActions";
 import TaskList from "../../components/TaskList/TaskList";
 import TaskForm, { type TaskFormData } from "../../components/TaskForm/TaskForm";
 import Modal from "../../components/Modals/Modals";
+import { formatWeekRangeLabel, getCurrentWeekRange } from "../../utils/week";
 import "./Task.css";
 
 type FilterValue = "all" | "pending" | "completed";
@@ -26,7 +27,7 @@ function Tasks() {
   const [formModalTask, setFormModalTask] = useState<Task | null>(null)
   const [taskPendingDelete, setTaskPendingDelete] = useState<Task | null>(null);
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
-
+  const { start, end } = useMemo(() => getCurrentWeekRange(), []);
   const handleToggle = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
@@ -70,7 +71,26 @@ function Tasks() {
   return (
     <div className="tasks-page__content">
       <div className="tasks-page__header">
-        <h2>Mis tareas</h2>
+        <div className="resumen-header">
+          <h2>Mis tareas semanal</h2>
+          <span className="resumen-header__range">{formatWeekRangeLabel(start, end)}</span>
+        </div>
+
+      </div>
+      <div className="container-buttons">
+        <div className="filters">
+          {FILTERS.map((filter) => (
+            <button
+              key={filter.value}
+              type="button"
+              className={`filter${activeFilter === filter.value ? " active" : ""}`}
+              onClick={() => setActiveFilter(filter.value)}
+            >
+              {filter.label}
+            </button>
+          ))}
+
+        </div>
         <button
           type="button"
           className="tasks-page__new-btn"
@@ -80,18 +100,6 @@ function Tasks() {
         </button>
       </div>
 
-      <div className="filters">
-        {FILTERS.map((filter) => (
-          <button
-            key={filter.value}
-            type="button"
-            className={`filter${activeFilter === filter.value ? " active" : ""}`}
-            onClick={() => setActiveFilter(filter.value)}
-          >
-            {filter.label}
-          </button>
-        ))}
-      </div>
 
       {loading && (
         <div className="tasks-skeleton">

@@ -39,8 +39,7 @@
 
 .modal-box p {
   font-size: 13px;
-  color: var(--plum-2);
-  margin: 0 0 20px;
+  margin: 0 0 0 5px;
   line-height: 1.5;
 }
 

@@ -15,7 +15,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+}
+.tasks-page__header span{
+  display: flex;
+  justify-content: center;
 }
 
 .tasks-page__content h2 {
@@ -46,11 +49,15 @@
 .tasks-page__error {
   color: var(--fuchsia);
 }
-
+.container-buttons{
+  display: flex;
+  justify-content: space-between;
+margin-bottom: 25px;
+}
 .filters {
   display: flex;
   gap: 8px;
-  margin-bottom: 16px;
+  
 }
 
 .filter {
