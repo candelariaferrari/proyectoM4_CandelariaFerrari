@@ -10,9 +10,37 @@
   overflow-y: auto;
 }
 
+.tasks-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
 .tasks-page__content h2 {
   font-size: 21px;
-  margin: 0 0 14px;
+  margin: 0;
+}
+
+.tasks-page__new-btn {
+  background: var(--grad-orange);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: var(--shadow-orange);
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.tasks-page__new-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(255, 107, 53, 0.45);
 }
 
 .tasks-page__error {
@@ -57,8 +85,31 @@
 }
 
 @media (min-width: 1024px) {
+  /* En desktop, app-layout__content ya es el que scrollea (ver
+     AppLayout.css). Acá adentro, en vez de que toda la pantalla de tareas
+     se desplace junto con el título y los filtros, dejamos esos fijos y
+     que el scroll aparezca solo en la lista de tareas. */
   .tasks-page__content {
     padding-bottom: 26px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .tasks-page__content > .filters {
+    flex-shrink: 0;
+  }
+
+  .tasks-page__content > .task-list-section,
+  .tasks-page__content > .tasks-skeleton,
+  .tasks-page__content > .task-empty {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    /* un poco de padding para que la sombra/hover de la última tarea no
+       quede pegado al borde inferior del contenedor con scroll */
+    padding-bottom: 8px;
   }
 }
 

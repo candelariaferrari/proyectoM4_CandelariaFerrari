@@ -20,11 +20,12 @@ const FILTERS: { value: FilterValue; label: string }[] = [
 function Tasks() {
 
   const { tasks, loading, error } = useTasks(auth.currentUser?.uid);
-  const { updateTask, deleteTask, toggleTask, pendingId } = useTaskActions();
+  const { createTask, updateTask, deleteTask, toggleTask, pendingId } = useTaskActions();
 
   const [activeFilter, setActiveFilter] = useState<FilterValue>("all");
   const [formModalTask, setFormModalTask] = useState<Task | null>(null)
   const [taskPendingDelete, setTaskPendingDelete] = useState<Task | null>(null);
+  const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
 
   const handleToggle = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId);
@@ -55,6 +56,11 @@ function Tasks() {
     if (ok) setFormModalTask(null);
   };
 
+  const handleCreateTask = async (formData: TaskFormData) => {
+    const ok = await createTask(formData);
+    if (ok) setIsNewTaskOpen(false);
+  };
+
   const filteredTasks = tasks.filter((task) => {
     if (activeFilter === "pending") return !task.completed;
     if (activeFilter === "completed") return task.completed;
@@ -63,7 +69,16 @@ function Tasks() {
 
   return (
     <div className="tasks-page__content">
-      <h2>Mis tareas</h2>
+      <div className="tasks-page__header">
+        <h2>Mis tareas</h2>
+        <button
+          type="button"
+          className="tasks-page__new-btn"
+          onClick={() => setIsNewTaskOpen(true)}
+        >
+          + Nueva tarea
+        </button>
+      </div>
 
       <div className="filters">
         {FILTERS.map((filter) => (
@@ -96,7 +111,15 @@ function Tasks() {
           onEdit={handleRequestEdit}
           onDelete={handleRequestDelete}
           pendingTaskId={pendingId}
+          onNewTask={() => setIsNewTaskOpen(true)}
         />
+      )}
+
+      {isNewTaskOpen && (
+        <Modal onClose={() => setIsNewTaskOpen(false)}>
+          <h3>Nueva tarea</h3>
+          <TaskForm onSubmit={handleCreateTask} />
+        </Modal>
       )}
 
       {formModalTask && (
