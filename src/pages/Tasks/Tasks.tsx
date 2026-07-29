@@ -75,7 +75,6 @@ function Tasks() {
           <h2>Mis tareas semanal</h2>
           <span className="resumen-header__range">{formatWeekRangeLabel(start, end)}</span>
         </div>
-
       </div>
       <div className="container-buttons">
         <div className="filters">
@@ -89,8 +88,8 @@ function Tasks() {
               {filter.label}
             </button>
           ))}
-
         </div>
+
         <button
           type="button"
           className="tasks-page__new-btn"
@@ -99,6 +98,7 @@ function Tasks() {
           + Nueva tarea
         </button>
       </div>
+
 
 
       {loading && (
@@ -120,6 +120,8 @@ function Tasks() {
           onDelete={handleRequestDelete}
           pendingTaskId={pendingId}
           onNewTask={() => setIsNewTaskOpen(true)}
+          hasAnyTasks={tasks.length > 0}
+          activeFilter={activeFilter}
         />
       )}
 

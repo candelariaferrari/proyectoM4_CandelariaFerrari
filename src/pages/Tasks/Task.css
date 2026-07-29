@@ -6,19 +6,19 @@
 .tasks-page__content {
   flex: 1;
   padding: 24px 20px;
-  padding-bottom: 76px;
+  padding-bottom: 96px;
   overflow-y: auto;
 }
 
 .tasks-page__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  margin-bottom: 4px;
 }
-.tasks-page__header span{
+
+.tasks-page__header .resumen-header {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 }
 
 .tasks-page__content h2 {
@@ -26,38 +26,21 @@
   margin: 0;
 }
 
-.tasks-page__new-btn {
-  background: var(--grad-orange);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 9px 16px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12.5px;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: var(--shadow-orange);
-  transition: transform .16s ease, box-shadow .16s ease;
-}
+/* ===========================
+   Filtros + botón
+=========================== */
 
-.tasks-page__new-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(255, 107, 53, 0.45);
-}
-
-.tasks-page__error {
-  color: var(--fuchsia);
-}
-.container-buttons{
+.container-buttons {
   display: flex;
-  justify-content: space-between;
-margin-bottom: 25px;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 25px;
 }
+
 .filters {
   display: flex;
   gap: 8px;
-  
+  flex-wrap: wrap;
 }
 
 .filter {
@@ -69,12 +52,16 @@ margin-bottom: 25px;
   background: #fff;
   border: 1px solid var(--orange-deep);
   cursor: pointer;
-  transition: transform .14s ease, box-shadow .14s ease, background .14s ease, color .14s ease;
+  transition:
+    transform .14s ease,
+    box-shadow .14s ease,
+    background .14s ease,
+    color .14s ease;
 }
 
 .filter:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(43,27,46,.1);
+  box-shadow: 0 4px 10px rgba(43, 27, 46, .1);
 }
 
 .filter.active {
@@ -84,18 +71,51 @@ margin-bottom: 25px;
   box-shadow: var(--shadow-orange);
 }
 
+/* ===========================
+   Botón nueva tarea
+=========================== */
+
+.tasks-page__new-btn {
+  width: 100%;
+  background: var(--grad-orange);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-orange);
+  transition: transform .16s ease, box-shadow .16s ease;
+  margin: 0;
+}
+
+.tasks-page__new-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(255, 107, 53, .45);
+}
+
+.tasks-page__error {
+  color: var(--fuchsia);
+}
+
+/* ===========================
+   Tablet
+=========================== */
+
 @media (min-width: 768px) {
   .tasks-page__content {
     padding: 26px 30px;
-    padding-bottom: 76px;
+    padding-bottom: 96px;
   }
 }
 
+/* ===========================
+   Desktop
+=========================== */
+
 @media (min-width: 1024px) {
-  /* En desktop, app-layout__content ya es el que scrollea (ver
-     AppLayout.css). Acá adentro, en vez de que toda la pantalla de tareas
-     se desplace junto con el título y los filtros, dejamos esos fijos y
-     que el scroll aparezca solo en la lista de tareas. */
   .tasks-page__content {
     padding-bottom: 26px;
     height: 100%;
@@ -104,23 +124,36 @@ margin-bottom: 25px;
     overflow: hidden;
   }
 
-  .tasks-page__content > .filters {
+  .container-buttons {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tasks-page__new-btn {
+    width: auto;
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .tasks-page__content>.tasks-page__header,
+  .tasks-page__content>.container-buttons {
     flex-shrink: 0;
   }
 
-  .tasks-page__content > .task-list-section,
-  .tasks-page__content > .tasks-skeleton,
-  .tasks-page__content > .task-empty {
+  .tasks-page__content>.task-list-section,
+  .tasks-page__content>.tasks-skeleton,
+  .tasks-page__content>.task-empty {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    /* un poco de padding para que la sombra/hover de la última tarea no
-       quede pegado al borde inferior del contenedor con scroll */
     padding-bottom: 8px;
   }
 }
 
-/* ---- Skeleton de carga (usado por el nuevo bloque en Tasks.tsx) ---- */
+/* ===========================
+   Skeleton
+=========================== */
 
 .tasks-skeleton {
   display: flex;

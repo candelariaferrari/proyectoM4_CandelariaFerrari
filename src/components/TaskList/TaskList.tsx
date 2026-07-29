@@ -9,8 +9,9 @@ interface TaskListProps {
   onDelete: (taskId: string) => void;
   // id de la tarea que tiene una escritura en curso (crear/editar/eliminar/togglear)
   pendingTaskId?: string | null;
-  // abre el modal de nueva tarea desde el estado vacío
   onNewTask?: () => void;
+  hasAnyTasks?: boolean;
+  activeFilter?: "all" | "pending" | "completed";
 }
 
 function TaskList({
@@ -20,9 +21,21 @@ function TaskList({
   onDelete,
   pendingTaskId = null,
   onNewTask,
+  hasAnyTasks = true,
+  activeFilter = "all",
 }: TaskListProps) {
 
   if (tasks.length === 0) {
+    if (hasAnyTasks && activeFilter !== "all") {
+      const filterLabel = activeFilter === "completed" ? "completadas" : "pendientes";
+      return (
+        <div className="task-empty task-empty--filtered">
+          <h3>Nada por acá</h3>
+          <p>No tenés tareas {filterLabel} por ahora.</p>
+        </div>
+      );
+    }
+
     return (
       <div className="task-empty">
         <h3>Todo despejado por hoy</h3>

@@ -77,6 +77,19 @@
   background: linear-gradient(135deg, #FFE9DA, #FFF3EC);
 }
 
+/* Variante para "hay tareas, pero ninguna coincide con el filtro elegido":
+   mismo bloque centrado, pero sin el círculo con el check (ese ícono
+   significa "todo completo", que no aplica acá, sobre todo si el filtro
+   activo es justo "Completadas" con 0 resultados). */
+.task-empty--filtered {
+  padding-top: 24px;
+}
+
+.task-empty--filtered::before,
+.task-empty--filtered::after {
+  content: none;
+}
+
 .task-empty h3 {
   font-family: 'Fraunces', serif;
   font-size: 18px;
