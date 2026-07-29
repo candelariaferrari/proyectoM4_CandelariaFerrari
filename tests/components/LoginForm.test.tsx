@@ -4,8 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import LoginForm from "../../src/components/LoginForm/LoginForm";
 
-// Mockeamos el servicio de autenticación (que por dentro usa Firebase) para
-// no depender de una conexión real a Firebase en los tests.
+// Mock servicio de autenticación ( Firebase) para no depender de una conexión real a Firebase en los tests.
 vi.mock("../../src/features/auth/authActions", () => ({
   login: vi.fn(),
   loginWithGoogle: vi.fn(),
@@ -14,8 +13,7 @@ vi.mock("../../src/features/auth/authActions", () => ({
 import { login } from "../../src/features/auth/authActions";
 import type { User } from "firebase/auth";
 
-// Mock mínimo de un User de Firebase: solo necesitamos que "login" resuelva
-// con algo tipado como User, no nos interesan sus datos reales en este test.
+// Mock mínimo de un User de Firebase: solo necesitamos que "login" resuelva tipado como User
 const fakeUser = { uid: "test-uid" } as User;
 
 function renderLoginForm() {
