@@ -25,7 +25,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   // Obtenemos los datos enviados desde el frontend. req.body contiene el cuerpo de la petición.
-  const { to, summary } = req.body ?? {}
+  // summaryHtml es opcional: si el frontend no lo manda (o es una versión vieja del cliente),
+  // el email se sigue enviando igual, solo que en texto plano.
+  const { to, summary, summaryHtml } = req.body ?? {}
 
   // Validamos que hayan llegado los datos necesarios. Si falta alguno un error 400 (Bad Request).
   if (!to || !summary) {
@@ -60,11 +62,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           Data: "Tu resumen de For Today - By Matecode",
         },
 
-        // Cuerpo del email
+        // Cuerpo del email. Mandamos siempre la versión en texto plano (Text) y,
+        // si vino, también una versión con diseño (Html) — así los clientes de
+        // correo que sí renderizan HTML muestran la versión linda, y los que no,
+        // caen en el texto plano como respaldo.
         Body: {
           Text: {
             Data: summary,
           },
+          ...(summaryHtml ? { Html: { Data: summaryHtml } } : {}),
         },
       },
     })
@@ -78,20 +84,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       messageId: result.MessageId,
     })
 
-  } catch (err: any) {
+  } catch (err) {
+    // AWS SDK no expone un tipo de error común para todos los servicios, así que
+    // llega como unknown y lo desarmamos "a mano" en vez de usar any.
+    const name = err instanceof Error ? err.name : "UnknownError"
+    const message = err instanceof Error ? err.message : "Failed to send email"
 
     // Si ocurre cualquier error durante el envío, lo mostramos en la consola del servidor para poder depurarlo.
-    console.error("SES send error:", err?.name, err?.message)
+    console.error("SES send error:", name, message)
 
     // También devolvemos un error al frontend.
     return res.status(500).json({
       ok: false,
 
       // Nombre del error que devuelve AWS
-      error: err?.name ?? "UnknownError",
+      error: name,
 
       // Mensaje descriptivo del error
-      message: err?.message ?? "Failed to send email",
+      message,
     })
   }
 }
