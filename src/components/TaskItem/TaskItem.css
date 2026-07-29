@@ -15,6 +15,11 @@
      nuevos en el DOM se dibujan encima de los anteriores. */
   position: relative;
   z-index: 0;
+  /* Mobile-first: por defecto (pantallas chicas) el item puede envolver en
+     dos líneas — ver .task-item__secondary más abajo. A partir de 640px
+     (ver media query al final del archivo) vuelve a ser una sola fila. */
+  flex-wrap: wrap;
+  row-gap: 10px;
 }
 
 /* La tarjeta que tiene el menú abierto pasa por encima de sus vecinas. */
@@ -114,6 +119,9 @@
 .task-item__menu {
   position: relative;
   flex-shrink: 0;
+  /* Mobile-first: en la línea de arriba, junto al checkbox y el título
+     (ver .task-item__secondary, que en mobile pasa a una segunda línea). */
+  order: 1;
 }
 
 .task-item__kebab {
@@ -170,8 +178,6 @@
   color: var(--fuchsia) !important;
 }
 
-
-
 .task-item__container-info {
   display: flex;
   flex: 1;
@@ -181,17 +187,50 @@
   gap: 1rem;
 }
 
+.task-item__secondary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  /* Mobile-first: por defecto, fecha límite + prioridad bajan a su propia
+     línea completa (flex-basis:100%), después del checkbox+título+menú
+     (ver order en .task-item__menu). A partir de 640px vuelven a la misma
+     fila que todo lo demás (ver media query al final del archivo). */
+  order: 2;
+  flex-basis: 100%;
+  justify-content: space-between;
+}
+
 .task-item__meta {
   flex-shrink: 0;
-  /* Antes no tenía ancho propio: ocupaba el ancho justo de su texto, y
-     como .task-item__content es el único con flex:1, era el que absorbía
-     el espacio sobrante — distinto en cada fila según cuánto midieran la
-     fecha y la etiqueta de prioridad. Con un ancho fijo acá (y en
-     .task-item__priority) el espacio que le queda a .task-item__content
-     es siempre el mismo, y la columna arranca en el mismo lugar en todas
-     las filas. text-align:left hace que además el texto "Fecha limite"
-     quede pegado a ese borde izquierdo (en vez de pegado al derecho,
-     donde el punto de arranque cambia según el largo de cada fecha). */
-  min-width: 150px;
   text-align: left;
+  /* Mobile-first: sin ancho fijo por defecto, para no forzar overflow en
+     pantallas chicas. A partir de 640px pasa a tener un ancho fijo (ver
+     media query) — así "Fecha limite" arranca siempre en el mismo punto,
+     sin importar cuánto midan la fecha o la etiqueta de prioridad de cada
+     fila (ver el comentario largo que tenía esta regla antes). */
+  min-width: 0;
+}
+
+/* A partir de acá (tablet/desktop) hay lugar de sobra para que checkbox,
+   título, fecha, prioridad y menú convivan en una sola fila, como en el
+   diseño original. */
+@media (min-width: 640px) {
+  .task-item {
+    flex-wrap: nowrap;
+  }
+
+  .task-item__menu {
+    order: 0;
+  }
+
+  .task-item__secondary {
+    order: 0;
+    flex-basis: auto;
+    justify-content: flex-start;
+  }
+
+  .task-item__meta {
+    min-width: 150px;
+  }
 }

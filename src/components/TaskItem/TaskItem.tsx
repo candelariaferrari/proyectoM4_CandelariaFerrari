@@ -69,20 +69,25 @@ function TaskItem({ task, onToggle, onEdit, onDelete, pending = false }: TaskIte
 
       </div>
 
-      <div className="task-item__meta">
-        {task.completed ? (
-          <span className="task-item__completed-label">✓ Completada</span>
-        ) : (
-          <strong className="task-item__date">
-            Fecha limite: {task.dueDate ? task.dueDate.toLocaleDateString("es-AR") : "Sin fecha"}
-          </strong>
-        )}
+      {/* Agrupamos fecha límite + prioridad para poder moverlas juntas a su
+          propia línea en pantallas chicas (ver TaskItem.css), en vez de que
+          cada una decida por su cuenta si entra o no en la fila y termine
+          superpuesta con el título. */}
+      <div className="task-item__secondary">
+        <div className="task-item__meta">
+          {task.completed ? (
+            <span className="task-item__completed-label">✓ Completada</span>
+          ) : (
+            <strong className="task-item__date">
+              Fecha limite: {task.dueDate ? task.dueDate.toLocaleDateString("es-AR") : "Sin fecha"}
+            </strong>
+          )}
+        </div>
+
+        <span className={`task-item__priority task-item__priority--${task.priority}`}>
+          {PRIORITY_LABEL[task.priority]}
+        </span>
       </div>
-
-
-      <span className={`task-item__priority task-item__priority--${task.priority}`}>
-        {PRIORITY_LABEL[task.priority]}
-      </span>
 
       <div className="task-item__menu" ref={menuRef}>
         <button
