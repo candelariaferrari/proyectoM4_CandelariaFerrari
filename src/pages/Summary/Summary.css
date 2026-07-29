@@ -5,6 +5,9 @@
 .resumen-page__status {
   padding: 24px 20px;
   color: var(--plum-2);
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid #ccc;
 }
 
 .resumen-page__status--error {
@@ -71,7 +74,7 @@
 .resumen-stats .stat-tile:nth-child(1) { animation-delay: .02s; }
 .resumen-stats .stat-tile:nth-child(2)::before { background: linear-gradient(90deg, #2f9e44, #8ce99a); }
 .resumen-stats .stat-tile:nth-child(2) { animation-delay: .07s; }
-.resumen-stats .stat-tile:nth-child(3)::before { background: linear-gradient(90deg, var(--orange-deep), var(--orange)); }
+.resumen-stats .stat-tile:nth-child(3)::before { background: linear-gradient(90deg, var(--fuchsia), var(--fuchsia)); }
 .resumen-stats .stat-tile:nth-child(3) { animation-delay: .12s; }
 .resumen-stats .stat-tile:nth-child(4) {
   background: var(--grad-plum);
@@ -86,14 +89,14 @@
 
 .stat-tile__value {
   font-family: 'Fraunces', serif;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
   margin: 0 0 2px;
   color: var(--plum);
 }
 
 .stat-tile__label {
-  font-size: 12px;
+  font-size: 1rem;
   color: var(--plum-2);
   margin: 0;
 }
@@ -125,13 +128,13 @@
 }
 
 .resumen-card h3 {
-  font-size: 14px;
+  font-size: 1rem;
   margin: 0 0 14px;
 }
 
 .resumen-card__subtitle {
   margin: -10px 0 14px;
-  font-size: 11px;
+  font-size: 0.8rem;
   color: #C9BBA8;
 }
 
@@ -149,7 +152,7 @@
 
 .day-row__label {
   width: 64px;
-  font-size: 12px;
+  font-size: 0.8rem;
   color: var(--plum-2);
   flex-shrink: 0;
 }
@@ -228,7 +231,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
-  font-size: 12.5px;
+  font-size: 0.8rem;
   border-radius: 6px;
   padding: 3px 4px;
   transition: background .14s ease;
@@ -302,11 +305,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 0.2rem;
 }
 
 .resumen-upcoming__header h3 {
-  font-size: 15px;
+  font-size: 1rem;
   margin: 0;
 }
 

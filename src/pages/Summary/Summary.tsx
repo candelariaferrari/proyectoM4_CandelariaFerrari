@@ -10,7 +10,7 @@ import "./Summary.css";
 const PRIORITY_META = {
   high: { label: "Alta", color: "#D6336C" },
   medium: { label: "Media", color: "#E24E17" },
-  low: { label: "Baja", color: "#4A3550" },
+  low: { label: "Baja", color: "#CCCCCC" },
 } as const;
 
 //Formatear fecha limite, si no tiene -> sin fecha. si es 00:00 ->fecha, si es hora especifica si muestra
