@@ -177,6 +177,16 @@ function Summary() {
           </div>
         </div>
       </div>
+      <div className="resumen-cta">
+        <div className="resumen-cta__text">
+          <div className="resumen-cta__icon">✉️</div>
+          <div>
+            <p className="resumen-cta__title">Tu resumen listo para enviar</p>
+            <p className="resumen-cta__sub">Te enviamos un informe completo con tus estadísticas de la semana.</p>
+          </div>
+        </div>
+        <EmailSummaryButton todos={tasks} userEmail={auth.currentUser?.email ?? ""} />
+      </div>
       <div className="resumen-upcoming">
         <div className="resumen-upcoming__header">
           <h3>Próximas tareas</h3>
@@ -208,16 +218,7 @@ function Summary() {
           ))}
         </div>
       </div>
-      <div className="resumen-cta">
-        <div className="resumen-cta__text">
-          <div className="resumen-cta__icon">✉️</div>
-          <div>
-            <p className="resumen-cta__title">Tu resumen listo para enviar</p>
-            <p className="resumen-cta__sub">Te enviamos un informe completo con tus estadísticas de la semana.</p>
-          </div>
-        </div>
-        <EmailSummaryButton todos={tasks} userEmail={auth.currentUser?.email ?? ""} />
-      </div>
+
     </div>
   );
 }
