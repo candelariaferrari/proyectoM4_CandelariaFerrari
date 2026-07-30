@@ -98,7 +98,9 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
     return (
         <form className="task-form" onSubmit={handleSubmit} noValidate>
             <div className="task-form__field">
+                <label className="task-form__label" htmlFor="task-title">Titulo</label>
                 <input
+                    id="task-title"
                     className="task-form__input"
                     type="text"
                     name="title"
@@ -111,6 +113,7 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
             </div>
 
             <div className="task-form__field">
+                 <label className="task-form__label" htmlFor="task-title">Descripción</label>
                 <textarea
                     className="task-form__textarea"
                     name="description"
@@ -124,7 +127,8 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
             </div>
 
             <div className="task-form__field">
-                <div className="task-form__priority-group">
+                <label className="task-form__label" id="task-priority-label">Prioridad</label>
+                <div className="task-form__priority-group" role="group" aria-labelledby="task-priority-label">
                     {PRIORITY_OPTIONS.map((option) => (
                         <button
                             key={option.value}
@@ -141,7 +145,9 @@ function TaskForm({ initialTask, onSubmit }: TaskFormProps) {
             </div>
 
             <div className="task-form__field">
+                <label className="task-form__label" htmlFor="task-dueDate">Fecha limite (opcional)</label>
                 <input
+                    id="task-dueDate"
                     className="task-form__input"
                     type="date"
                     name="dueDate"
