@@ -98,9 +98,9 @@
 }
 
 .task-form__priority-option--high.task-form__priority-option--selected {
-  border-color: var(--fuchsia);
-  background: #F9D9E3;
-  color: var(--fuchsia);
+  border-color: var(--priority-high);
+  background: #F2D9E2;
+  color: var(--priority-high);
 }
 
 .task-form__priority-option--medium.task-form__priority-option--selected {

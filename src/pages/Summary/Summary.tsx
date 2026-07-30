@@ -8,7 +8,7 @@ import { getCurrentWeekRange, getWeekDays, isSameDay, WEEKDAY_LABELS, formatWeek
 import "./Summary.css";
 
 const PRIORITY_META = {
-  high: { label: "Alta", color: "#D6336C" },
+  high: { label: "Alta", color: "#9D174D" },
   medium: { label: "Media", color: "#E24E17" },
   low: { label: "Baja", color: "#CCCCCC" },
 } as const;

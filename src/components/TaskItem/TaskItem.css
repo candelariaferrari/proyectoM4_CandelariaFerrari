@@ -33,7 +33,7 @@
 }
 
 .task-item--high {
-  border-color: var(--fuchsia);
+  border-color: var(--priority-high);
 }
 
 .task-item--medium {
@@ -102,8 +102,8 @@
 }
 
 .task-item__priority--high {
-  background: #F9D9E3;
-  color: var(--fuchsia);
+  background: #F2D9E2;
+  color: var(--priority-high);
 }
 
 .task-item__priority--medium {

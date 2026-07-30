@@ -7,6 +7,8 @@
   --orange: #FF6B35;
   --orange-deep: #E24E17;
   --fuchsia: #D6336C;
+  --priority-high: #9D174D;
+  --priority-high-deep: #7A1039;
   --red: #DC2626;
   --line: #E5D6C2;
   --white: #fff;
@@ -275,7 +277,7 @@ h1, h2, h3 {
 }
 
 .task-item__checkbox--high {
-  border-color: var(--fuchsia);
+  border-color: var(--priority-high);
 }
 
 .task-item__checkbox--medium {
@@ -299,8 +301,8 @@ h1, h2, h3 {
 }
 
 .task-item__checkbox--high:checked {
-  border-color: var(--fuchsia);
-  background: linear-gradient(135deg, var(--fuchsia), #b3245a);
+  border-color: var(--priority-high);
+  background: linear-gradient(135deg, var(--priority-high), var(--priority-high-deep));
 }
 
 .task-item__checkbox--medium:checked {

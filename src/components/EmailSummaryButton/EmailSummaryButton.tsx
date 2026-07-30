@@ -12,7 +12,7 @@ type Status = "idle" | "loading"
 
 // Colores de prioridad, iguales a los de TaskItem/Summary. 
 const PRIORITY_EMAIL_META: Record<Task["priority"], { label: string; color: string; bg: string }> = {
-    high: { label: "Alta", color: "#D6336C", bg: "#F9D9E3" },
+    high: { label: "Alta", color: "#9D174D", bg: "#F2D9E2" },
     medium: { label: "Media", color: "#E24E17", bg: "#FFE1D1" },
     low: { label: "Baja", color: "#4A3550", bg: "#EDE3D2" },
 }
